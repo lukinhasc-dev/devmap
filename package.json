@@ -1,0 +1,31 @@
+{
+  "name": "devmap",
+  "version": "1.0.0",
+  "private": true,
+  "description": "DevMap é uma aplicação desktop para organizar e documentar APIs backend, rotas e estruturas de banco de dados de forma clara e estruturada.",
+  "main": "electron/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "concurrently \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\" \"wait-on http://localhost:5173 && electron .\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lukinhasc-dev/devmap.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lukinhasc-dev/devmap/issues"
+  },
+  "homepage": "https://github.com/lukinhasc-dev/devmap#readme",
+  "dependencies": {
+    "concurrently": "^9.2.1",
+    "electron": "^40.6.1",
+    "wait-on": "^9.0.4"
+  },
+  "workspaces": [
+    "backend",
+    "frontend"
+  ]
+}
