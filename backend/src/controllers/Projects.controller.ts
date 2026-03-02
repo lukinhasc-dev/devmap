@@ -43,7 +43,7 @@ export default class ProjectsController {
         const projects: Projects = req.body
 
         try {
-            if (!projects.nome || !projects.descricao || !projects.status) {
+            if (!projects.nome.trim() || !projects.descricao.trim() || !projects.status.trim()) {
                 return res.status(400).json({
                     message: "Todos os campos são obrigatórios",
                     error: "Erro ao cadastrar projeto"

@@ -20,7 +20,7 @@ export default class EndpointController {
         const endpoint: Endpoint = req.body;
 
         try {
-            if (!endpoint.nome || !endpoint.descricao || !endpoint.rota || !endpoint.metodo || !endpoint.controller_nome) {
+            if (!endpoint.nome.trim() || !endpoint.descricao.trim() || !endpoint.rota.trim() || !endpoint.metodo.trim() || !endpoint.controller_nome.trim()) {
                 return res.status(400).json({
                     message: "Todos os campos são obrigatórios",
                     error: "Erro interno do servidor"

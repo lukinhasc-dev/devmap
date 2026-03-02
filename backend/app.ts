@@ -3,16 +3,18 @@ import cors from "cors";
 import "./src/database/connection";
 import { runMigrations } from "./src/database/migrations";
 import endpointRoutes from "./src/routes/endpoint.routes";
+import projectsRoutes from "./src/routes/projects.routes";
 
 const app = express();
 const PORT = process.env.PORT || 3333;
 
-app.use(cors());
+app.use(cors({ origin: "*" }));
 app.use(express.json());
 
 
 //Rotas das APIs
 app.use("/api/devmap", endpointRoutes);
+app.use("/api/devmap", projectsRoutes);
 
 
 
