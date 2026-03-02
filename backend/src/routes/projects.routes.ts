@@ -4,10 +4,10 @@ import ProjectsController from "../controllers/Projects.controller";
 const router = Router()
 const projectsController = new ProjectsController()
 
-router.get("/projects", projectsController.getProjects)
-router.get("/projects/:id", projectsController.getProjectById)
-router.post("/projects", projectsController.createProject)
-router.put("/projects/:id", projectsController.updateProject)
-router.delete("/projects/:id", projectsController.deleteProject)
+router.get("/", projectsController.getProjects)
+router.get("/:id", projectsController.getProjectById)
+router.post("/", projectsController.createProject)
+router.put("/:id", projectsController.updateProject)
+router.delete("/:id", projectsController.deleteProject)
 
 export default router
