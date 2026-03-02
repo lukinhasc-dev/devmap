@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import db from "../database/connection";
-import { Database } from "../models/Database.model";
+import type { Database } from "../models/Database.model";
 
 export default class DatabaseController {
     async getDatabases(req: Request, res: Response) {

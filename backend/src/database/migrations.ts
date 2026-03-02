@@ -77,7 +77,7 @@ export function databases() {
 
 export function github() {
     db.exec(`
-        CREATE TABLE IF NOT EXISTS github_repos (
+        CREATE TABLE IF NOT EXISTS github (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             project_id INTEGER NOT NULL,
 
