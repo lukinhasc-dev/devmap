@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import "./src/database/connection";
 import { runMigrations } from "./src/database/migrations";
-
+import endpointRoutes from "./src/routes/endpoint.routes";
 
 const app = express();
 const PORT = process.env.PORT || 3333;
@@ -10,9 +10,11 @@ const PORT = process.env.PORT || 3333;
 app.use(cors());
 app.use(express.json());
 
-app.get("/health", (req, res) => {
-    res.json({ status: "Backend funcionando! 🚀" });
-});
+
+//Rotas das APIs
+app.use("/api", endpointRoutes);
+
+
 
 app.listen(PORT, () => {
     console.log(`Servidor iniciado na porta ${PORT} 🚀!`);
