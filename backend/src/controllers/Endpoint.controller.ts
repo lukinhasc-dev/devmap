@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Endpoint } from "../models/Endpoint.model";
+import type { Endpoint } from "../models/Endpoint.model";
 import db from "../database/connection";
 
 export default class EndpointController {
@@ -28,7 +28,7 @@ export default class EndpointController {
             }
 
             const result = db.prepare("INSERT INTO endpoints (nome, descricao, rota, metodo, controller_nome) VALUES (?, ?, ?, ?, ?)").run(endpoint.nome, endpoint.descricao, endpoint.rota, endpoint.metodo, endpoint.controller_nome);
-            return res.status(200).json({
+            return res.status(201).json({
                 message: "Endpoint criado com sucesso!",
                 result
             });

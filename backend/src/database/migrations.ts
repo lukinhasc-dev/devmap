@@ -1,6 +1,5 @@
 import db from "./connection";
 
-
 db.pragma("foreign_keys = ON");
 
 export function runMigrations() {
@@ -38,6 +37,7 @@ export function projects() {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             nome TEXT NOT NULL,
             descricao TEXT,
+            status TEXT NOT NULL,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
         );
