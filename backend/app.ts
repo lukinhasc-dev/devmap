@@ -12,7 +12,7 @@ app.use(express.json());
 
 
 //Rotas das APIs
-app.use("/api", endpointRoutes);
+app.use("/api/devmap", endpointRoutes);
 
 
 
