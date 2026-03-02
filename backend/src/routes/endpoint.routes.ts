@@ -9,4 +9,4 @@ router.post("/", endpointController.createEndpoint);
 router.put("/:id", endpointController.updateEndpoint);
 router.delete("/:id", endpointController.deleteEndpoint);
 
-export default router;  
+export default router;
