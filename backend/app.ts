@@ -1,7 +1,8 @@
 import express from "express";
 import cors from "cors";
-import "./database/connection";
-import { runMigrations } from "./database/migrations";
+import "./src/database/connection";
+import { runMigrations } from "./src/database/migrations";
+
 
 const app = express();
 const PORT = process.env.PORT || 3333;
@@ -19,3 +20,5 @@ app.listen(PORT, () => {
     //Banco de dados, os migrations serve para criar as tabelas no SQLite.
     runMigrations();
 });
+
+export default app;
