@@ -16,11 +16,26 @@ export default class GithubController {
         }
     }
 
+    async getGithubById(req: Request, res: Response) {
+        const id = Number(req.params.id);
+
+        try {
+            const result = db.prepare("SELECT * FROM github WHERE id = ?").get(id)
+            return res.status(200).json(result)
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({
+                message: "Erro ao buscar github",
+                error: error instanceof Error ? error.message : "Erro inesperado"
+            })
+        }
+    }
+
     async createGithub(req: Request, res: Response) {
         const github: Github = req.body;
 
         try {
-            const result = db.prepare("INSERT INTO github (id, project_id, nome_repositorio, link_repositorio, stack, observacoes, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)").get(github.id, github.project_id, github.nome_repositorio, github.link_repositorio, github.stack, github.observacoes, github.created_at)
+            const result = db.prepare("INSERT INTO github (id, project_id, nome_repositorio, link_repositorio, stack, observacoes, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)").run(github.id, github.project_id, github.nome_repositorio, github.link_repositorio, github.stack, github.observacoes, github.created_at)
             return res.status(201).json({
                 message: "Github criado com sucesso!",
                 result
