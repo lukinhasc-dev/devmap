@@ -1,7 +1,10 @@
 export interface Projects {
+    id: number;
     nome: string;
     descricao: string;
-    status: string;
+    status: Status;
     created_at: Date;
     updated_at: Date;
 }
+
+type Status = "Em Andamento" | "Concluídos" | "Pausados" | string

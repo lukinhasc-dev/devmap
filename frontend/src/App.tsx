@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
-import Home from "./pages/Home.tsx"
 import Sidebar from "./components/Sidebar.tsx"
 import "./styles/App.css"
+import Projects from "./pages/Projects.tsx"
 
 function App() {
   return (
@@ -10,7 +10,7 @@ function App() {
         <Sidebar />
         <main className="app-content">
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<Projects />} />
           </Routes>
         </main>
       </div>

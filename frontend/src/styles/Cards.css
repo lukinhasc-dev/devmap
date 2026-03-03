@@ -4,16 +4,20 @@
 
 .projects-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 1rem;
 }
 
+/* ── Card container ── */
 .card {
     background-color: var(--color-surface);
     border: 1px solid var(--color-border);
     border-radius: var(--radius);
-    padding: 1.5rem;
+    padding: 1.20rem 1.20rem 1rem 1.20rem;
     box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
     transition: transform var(--transition), border-color var(--transition);
 }
 
@@ -22,10 +26,108 @@
     border-color: var(--color-primary);
 }
 
-.card h1,
-.card h2,
-.card h3 {
-    font-size: 1.1rem;
+/* ── Header: título + ações ── */
+.card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.card-title {
+    font-size: 1rem;
     font-weight: 600;
-    margin-bottom: 0.5rem;
+    color: var(--color-text);
+    line-height: 1.3;
+    flex: 1;
+}
+
+/* ── Action icon buttons ── */
+.card-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    flex-shrink: 0;
+}
+
+.card-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--color-muted);
+    cursor: pointer;
+    transition: background var(--transition), color var(--transition);
+}
+
+.card-icon-btn svg {
+    width: 15px;
+    height: 15px;
+}
+
+.card-icon-btn--edit:hover {
+    background: rgba(157, 78, 221, 0.15);
+    color: var(--color-primary);
+}
+
+.card-icon-btn--delete:hover {
+    background: rgba(239, 68, 68, 0.12);
+    color: #ef4444;
+}
+
+.card-icon-btn--enter:hover {
+    background: rgba(99, 179, 237, 0.12);
+    color: #63b3ed;
+}
+
+/* ── Description ── */
+.card-description {
+    font-size: 0.85rem;
+    color: var(--color-muted);
+    line-height: 1.5;
+}
+
+/* ── Status badge (pill, estilo filter-chip) ── */
+.card-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border-radius: 999px;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    width: fit-content;
+    margin-top: 0.25rem;
+}
+
+/* Em Andamento → laranja */
+.card-status--active {
+    background: rgba(251, 146, 60, 0.12);
+    border: 1px solid rgba(251, 146, 60, 0.4);
+    color: #fb923c;
+}
+
+/* Concluídos → verde */
+.card-status--done {
+    background: rgba(52, 211, 153, 0.12);
+    border: 1px solid rgba(52, 211, 153, 0.4);
+    color: #34d399;
+}
+
+/* Pausados → vermelho */
+.card-status--paused {
+    background: rgba(239, 68, 68, 0.12);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    color: #ef4444;
+}
+
+/* Fallback */
+.card-status--unknown {
+    background: rgba(156, 163, 175, 0.1);
+    border: 1px solid rgba(156, 163, 175, 0.3);
+    color: #9ca3af;
 }

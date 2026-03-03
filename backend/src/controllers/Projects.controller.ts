@@ -50,6 +50,13 @@ export default class ProjectsController {
                 })
             }
 
+            if (projects.status !== "Em Andamento" && projects.status !== "Concluídos" && projects.status !== "Pausados") {
+                return res.status(400).json({
+                    message: "Status inválido",
+                    error: "Erro ao cadastrar projeto"
+                })
+            }
+
             const result = db.prepare("INSERT INTO projects (nome, descricao, status) VALUES (?, ?, ?)").run(projects.nome, projects.descricao, projects.status)
             return res.status(201).json({
                 message: "Projeto criado com sucesso!",
