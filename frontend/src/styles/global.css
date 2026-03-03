@@ -6,14 +6,14 @@
 :root {
     --font-family: 'Inter', system-ui, sans-serif;
 
-    --color-bg: #0f0f1a;
-    --color-surface: #1a1a2e;
-    --color-elevated: #252541;
-    --color-border: #2e2e50;
-    --color-primary: #6c63ff;
+    --color-bg: #12101c;
+    --color-surface: #1c1727;
+    --color-elevated: #261f34;
+    --color-border: #342a47;
+    --color-primary: #9d4edd;
 
-    --color-text: #e8e8f0;
-    --color-muted: #9999bb;
+    --color-text: #ffffff;
+    --color-muted: #b09ac7;
 
     --radius: 8px;
     --shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
