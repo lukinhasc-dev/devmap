@@ -6,7 +6,7 @@ function createWindow() {
         height: 800,
     });
 
-    win.loadURL("http://localhost:5173");
+    win.loadURL("http://localhost:3000");
 }
 
 app.whenReady().then(createWindow);
