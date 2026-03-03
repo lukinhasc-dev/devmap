@@ -1,10 +1,12 @@
 const { app, BrowserWindow, Menu } = require("electron")
+const path = require("path")
 
 function createWindow() {
     const win = new BrowserWindow({
         autoHideMenuBar: true,
         minWidth: 1200,
         minHeight: 800,
+        icon: path.join(__dirname, "assets", "favicon.ico"),
     })
 
     win.maximize()

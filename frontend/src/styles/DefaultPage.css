@@ -112,6 +112,50 @@
     opacity: 0.75;
 }
 
+/* ── Sub-barra de filtros ── */
+.page-subbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.875rem 0;
+}
+
+.filter-chips {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: transparent;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    padding: 0.3rem 0.9rem;
+    font-size: 0.8rem;
+    font-family: var(--font-family);
+    font-weight: 500;
+    color: var(--color-muted);
+    cursor: pointer;
+    transition: border-color var(--transition), color var(--transition), background var(--transition);
+}
+
+.filter-chip:hover {
+    border-color: var(--color-primary);
+    color: var(--color-text);
+}
+
+.filter-chip--active {
+    background: rgba(157, 78, 221, 0.15);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
 /* ── Content area ── */
 .content {
     padding: 1.5rem 2rem;

@@ -1,4 +1,10 @@
+import { useState } from "react"
 import "../styles/DefaultPage.css"
+
+type FilterOption = {
+    label: string
+    value: string
+}
 
 type DefaultPageProps = {
     tittle: string
@@ -7,12 +13,31 @@ type DefaultPageProps = {
     onSearch?: (value: string) => void
     onAdd?: () => void
     addLabel?: string
+    filters?: FilterOption[]
+    onFilterChange?: (value: string) => void
 }
 
-export default function DefaultPage({ tittle, description, children, onSearch, onAdd, addLabel = "Adicionar" }: DefaultPageProps) {
+export default function DefaultPage({
+    tittle,
+    description,
+    children,
+    onSearch,
+    onAdd,
+    addLabel = "Novo",
+    filters,
+    onFilterChange,
+}: DefaultPageProps) {
+    const [activeFilter, setActiveFilter] = useState<string>(filters?.[0]?.value ?? "")
+
+    function handleFilter(value: string) {
+        setActiveFilter(value)
+        onFilterChange?.(value)
+    }
+
     return (
         <>
             <div className="home-page">
+                {/* ── Topo: título + toolbar ── */}
                 <div className="page-header">
                     <div className="page-header-text">
                         <h1 className="tittle">{tittle}</h1>
@@ -44,6 +69,23 @@ export default function DefaultPage({ tittle, description, children, onSearch, o
                         )}
                     </div>
                 </div>
+
+                {/* ── Sub-barra: filtros ── */}
+                {filters && filters.length > 0 && (
+                    <div className="page-subbar">
+                        <div className="filter-chips">
+                            {filters.map((f) => (
+                                <button
+                                    key={f.value}
+                                    className={`filter-chip${activeFilter === f.value ? " filter-chip--active" : ""}`}
+                                    onClick={() => handleFilter(f.value)}
+                                >
+                                    {f.label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                )}
             </div>
 
             <div className="content">
