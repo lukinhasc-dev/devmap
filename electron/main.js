@@ -1,12 +1,16 @@
-const { app, BrowserWindow } = require("electron");
+const { app, BrowserWindow, Menu } = require("electron")
 
 function createWindow() {
     const win = new BrowserWindow({
-        width: 1200,
-        height: 800,
-    });
+        autoHideMenuBar: true,
+        minWidth: 1200,
+        minHeight: 800,
+    })
 
-    win.loadURL("http://localhost:3000");
+    win.maximize()
+    win.loadURL("http://localhost:3000")
+
+    Menu.setApplicationMenu(null)
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(createWindow)
