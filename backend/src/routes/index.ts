@@ -4,6 +4,7 @@ import projectsRoutes from "./projects.routes";
 import databaseRoutes from "./database.routes";
 import githubRoutes from "./github.routes";
 import tasksRoutes from "./tasks.routes";
+import dashboardRoutes from "./dashboard.routes";
 
 const router = Router();
 
@@ -12,5 +13,6 @@ router.use("/projects", projectsRoutes);
 router.use("/databases", databaseRoutes);
 router.use("/github", githubRoutes);
 router.use("/tasks", tasksRoutes);
+router.use("/dashboard", dashboardRoutes);
 
 export default router;

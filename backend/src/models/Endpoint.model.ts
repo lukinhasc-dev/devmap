@@ -5,5 +5,6 @@ export interface Endpoint {
     rota: string;
     metodo: string;
     controller_nome: string;
+    project_id: number;
     created_at: Date;
 }

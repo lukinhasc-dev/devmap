@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom"
 import Sidebar from "./components/Sidebar.tsx"
 import "./styles/App.css"
 import Projects from "./pages/Projects.tsx"
+import Home from "./pages/Home.tsx"
 
 function App() {
   return (
@@ -12,6 +13,12 @@ function App() {
           <Routes>
             <Route path="/projects" element={<Projects />} />
           </Routes>
+
+          <Routes>
+            <Route path="/home" element={<Home />} />
+          </Routes>
+
+
         </main>
       </div>
     </BrowserRouter>

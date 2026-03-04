@@ -3,7 +3,7 @@ import { Home, FolderGit2, Database, Plug, CheckSquare, Map } from "lucide-react
 import "../styles/Sidebar.css"
 
 const navItems = [
-    { to: "/", icon: Home, label: "Home" },
+    { to: "/home", icon: Home, label: "Home" },
     { to: "/projects", icon: FolderGit2, label: "Projects" },
     { to: "/github", icon: Map, label: "GitHub" },
     { to: "/databases", icon: Database, label: "Databases" },
