@@ -3,8 +3,11 @@ export interface Projects {
     nome: string;
     descricao: string;
     status: Status;
-    created_at: Date;
-    updated_at: Date;
+    data_inicio: string;
+    data_entrega?: string;
+    responsavel: string;
+    created_at?: Date;
+    updated_at?: Date;
 }
 
-type Status = "Em Andamento" | "Concluídos" | "Pausados" | string
+export type Status = "Em Andamento" | "Concluídos" | "Pausados" | string

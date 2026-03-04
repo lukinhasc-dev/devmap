@@ -1,23 +1,45 @@
 import { useState, useEffect } from "react"
 import DefaultPage from "./DefaultPage"
 import ProjectCard from "../components/ProjectsCards"
-import { getProjects } from "../services/projects.service"
+import ModalDefault from "../components/ModalDefault"
+import ProjectForm, { type ProjectFormData } from "../components/ProjectForm"
+import { getProjects, createProject, updateProject, deleteProject } from "../services/projects.service"
 import type { Projects } from "../models/Projects.model"
+
+const EMPTY_FORM: ProjectFormData = {
+    nome: "",
+    descricao: "",
+    status: "Em Andamento",
+    responsavel: "",
+    data_inicio: "",
+    data_entrega: "",
+}
+
+const STATUS_MAP: Record<string, string> = {
+    active: "Em Andamento",
+    done: "Concluídos",
+    paused: "Pausados",
+}
 
 export default function Projects() {
     const [projects, setProjects] = useState<Projects[]>([])
     const [filtered, setFiltered] = useState<Projects[]>([])
     const [loading, setLoading] = useState(true)
+    const [modalOpen, setModalOpen] = useState(false)
+    const [saving, setSaving] = useState(false)
+    const [form, setForm] = useState<ProjectFormData>(EMPTY_FORM)
+    const [error, setError] = useState("")
+    const [editingId, setEditingId] = useState<number | null>(null)
 
-    useEffect(() => {
+    function fetchProjects() {
+        setLoading(true)
         getProjects()
-            .then((data) => {
-                setProjects(data)
-                setFiltered(data)
-            })
+            .then((data) => { setProjects(data); setFiltered(data) })
             .catch(console.error)
             .finally(() => setLoading(false))
-    }, [])
+    }
+
+    useEffect(() => { fetchProjects() }, [])
 
     function handleSearch(query: string) {
         const q = query.toLowerCase()
@@ -26,21 +48,64 @@ export default function Projects() {
         ))
     }
 
-    const STATUS_MAP: Record<string, string> = {
-        active: "Em Andamento",
-        done: "Concluídos",
-        paused: "Pausados",
-    }
-
     function handleFilter(value: string) {
         if (value === "all") return setFiltered(projects)
-        const statusReal = STATUS_MAP[value]
-        setFiltered(projects.filter((p) => p.status === statusReal))
+        setFiltered(projects.filter((p) => p.status === STATUS_MAP[value]))
     }
 
     function handleAdd() {
-        // TODO: abrir modal de novo projeto
-        console.log("Novo projeto")
+        setEditingId(null)
+        setForm(EMPTY_FORM)
+        setError("")
+        setModalOpen(true)
+    }
+
+    function handleEdit(project: Projects) {
+        setEditingId(project.id)
+        setForm({
+            nome: project.nome,
+            descricao: project.descricao,
+            status: project.status,
+            responsavel: project.responsavel,
+            data_inicio: project.data_inicio?.slice(0, 10) ?? "",
+            data_entrega: project.data_entrega?.slice(0, 10) ?? "",
+        })
+        setError("")
+        setModalOpen(true)
+    }
+
+    async function handleSave() {
+        if (!form.nome.trim() || !form.responsavel.trim() || !form.data_inicio) {
+            setError("Nome, responsável e data de início são obrigatórios.")
+            return
+        }
+        setSaving(true)
+        try {
+            const payload = { ...form, data_entrega: form.data_entrega || undefined } as unknown as Projects
+            if (editingId !== null) {
+                await updateProject(editingId, payload)
+            } else {
+                await createProject(payload)
+            }
+            setModalOpen(false)
+            fetchProjects()
+        } catch {
+            setError("Erro ao salvar projeto. Tente novamente.")
+        } finally {
+            setSaving(false)
+        }
+    }
+
+
+
+    async function handleDelete(id: number) {
+        if (!window.confirm("Deseja realmente excluir este projeto?")) return
+        try {
+            await deleteProject(id)
+            fetchProjects()
+        } catch (err) {
+            console.error(err)
+        }
     }
 
     return (
@@ -64,11 +129,27 @@ export default function Projects() {
                 <p className="empty-text">Nenhum projeto encontrado.</p>
             ) : (
                 <div className="projects-cards">
-                    {filtered.map((project, index) => (
-                        <ProjectCard key={index} project={project} />
+                    {filtered.map((project) => (
+                        <ProjectCard key={project.id} project={project} onEdit={handleEdit} onDelete={handleDelete} />
                     ))}
                 </div>
             )}
+
+            <ModalDefault
+                isOpen={modalOpen}
+                onClose={() => setModalOpen(false)}
+                onSubmit={handleSave}
+                title={editingId !== null ? "Editar Projeto" : "Novo Projeto"}
+                description="Preencha os dados do projeto abaixo."
+                submitLabel={editingId !== null ? "Salvar Alterações" : "Criar Projeto"}
+                isLoading={saving}
+            >
+                <ProjectForm
+                    form={form}
+                    error={error}
+                    onChange={(field, value) => { setForm((p) => ({ ...p, [field]: value })); setError("") }}
+                />
+            </ModalDefault>
         </DefaultPage>
     )
 }
