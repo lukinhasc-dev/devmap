@@ -27,7 +27,7 @@ export default class EndpointController {
                 });
             }
 
-            const result = db.prepare("INSERT INTO endpoints (nome, descricao, rota, metodo, controller_nome) VALUES (?, ?, ?, ?, ?)").run(endpoint.nome, endpoint.descricao, endpoint.rota, endpoint.metodo, endpoint.controller_nome);
+            const result = db.prepare("INSERT INTO endpoints (nome, descricao, rota, metodo, controller_nome, project_id) VALUES (?, ?, ?, ?, ?, ?)").run(endpoint.nome, endpoint.descricao, endpoint.rota, endpoint.metodo, endpoint.controller_nome, endpoint.project_id);
             return res.status(201).json({
                 message: "Endpoint criado com sucesso!",
                 result

@@ -3,7 +3,7 @@ import { Home, FolderGit2, Database, Plug, CheckSquare, Map } from "lucide-react
 import "../styles/Sidebar.css"
 
 const navItems = [
-    { to: "/", icon: Home, label: "Home" },
+    { to: "/dashboard", icon: Home, label: "Dashboard" },
     { to: "/projects", icon: FolderGit2, label: "Projects" },
     { to: "/github", icon: Map, label: "GitHub" },
     { to: "/databases", icon: Database, label: "Databases" },
@@ -24,7 +24,7 @@ export default function Sidebar() {
                     <NavLink
                         key={to}
                         to={to}
-                        end={to === "/"}
+                        end={to === "/dashboard"}
                         className={({ isActive }) =>
                             `sidebar__item ${isActive ? "sidebar__item--active" : ""}`
                         }
