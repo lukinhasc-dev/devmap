@@ -41,6 +41,9 @@ export function projects() {
             nome TEXT NOT NULL,
             descricao TEXT,
             status TEXT NOT NULL,
+            data_inicio DATETIME NOT NULL,
+            data_entrega DATETIME,
+            responsavel TEXT NOT NULL,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
         );

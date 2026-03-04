@@ -1,0 +1,94 @@
+/* ===========================
+   SIDEBAR — DevMap
+   =========================== */
+
+.sidebar {
+    width: 220px;
+    min-width: 220px;
+    height: 100vh;
+    background-color: var(--color-surface);
+    border-right: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem 0.75rem;
+    position: sticky;
+    top: 0;
+}
+
+/* --- Logo --- */
+.sidebar__logo {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0 0.75rem;
+    margin-bottom: 2rem;
+}
+
+.sidebar__logo-icon {
+    font-size: 1.5rem;
+    color: var(--color-primary);
+    line-height: 1;
+}
+
+.sidebar__logo-text {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--color-text);
+    letter-spacing: -0.02em;
+}
+
+/* --- Nav items --- */
+.sidebar__nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex: 1;
+}
+
+.sidebar__item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.625rem 0.75rem;
+    border-radius: 8px;
+    color: var(--color-muted);
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background-color 150ms ease, color 150ms ease;
+    text-decoration: none;
+}
+
+.sidebar__item:hover {
+    background-color: var(--color-elevated);
+    color: var(--color-text);
+}
+
+.sidebar__item--active {
+    background-color: rgba(108, 99, 255, 0.15);
+    color: var(--color-primary);
+}
+
+.sidebar__item--active .sidebar__icon {
+    color: var(--color-primary);
+}
+
+.sidebar__icon {
+    flex-shrink: 0;
+    color: inherit;
+}
+
+.sidebar__label {
+    color: inherit;
+}
+
+/* --- Footer --- */
+.sidebar__footer {
+    padding: 0 0.75rem;
+    margin-top: 1rem;
+}
+
+.sidebar__version {
+    font-size: 0.75rem;
+    color: var(--color-muted);
+    opacity: 0.6;
+}

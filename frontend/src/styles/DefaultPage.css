@@ -1,0 +1,162 @@
+/* ===========================
+   DEFAULT PAGE — DevMap
+   =========================== */
+
+.home-page {
+    padding: 2rem 2rem 0 2rem;
+}
+
+/* ── Header (texto + toolbar) ── */
+.page-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--color-border);
+    flex-wrap: wrap;
+}
+
+.page-header-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.home-page h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--color-text);
+    letter-spacing: -0.02em;
+}
+
+.home-page p {
+    font-size: 0.9rem;
+    color: var(--color-muted);
+}
+
+/* ── Toolbar (search + add) ── */
+.page-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* ── Search ── */
+.search-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon {
+    position: absolute;
+    left: 0.75rem;
+    width: 15px;
+    height: 15px;
+    color: var(--color-muted);
+    pointer-events: none;
+}
+
+.search-input {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: 0.5rem 0.875rem 0.5rem 2.25rem;
+    font-size: 0.875rem;
+    font-family: var(--font-family);
+    color: var(--color-text);
+    width: 240px;
+    outline: none;
+    transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.search-input::placeholder {
+    color: var(--color-muted);
+}
+
+.search-input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(157, 78, 221, 0.15);
+}
+
+/* ── Add Button ── */
+.add-button {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--color-primary);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-family: var(--font-family);
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity var(--transition), box-shadow var(--transition);
+}
+
+.add-button svg {
+    width: 15px;
+    height: 15px;
+}
+
+.add-button:hover {
+    opacity: 0.88;
+    box-shadow: 0 4px 14px rgba(157, 78, 221, 0.35);
+}
+
+.add-button:active {
+    opacity: 0.75;
+}
+
+/* ── Sub-barra de filtros ── */
+.page-subbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.875rem 0;
+}
+
+.filter-chips {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: transparent;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    padding: 0.3rem 0.9rem;
+    font-size: 0.8rem;
+    font-family: var(--font-family);
+    font-weight: 500;
+    color: var(--color-muted);
+    cursor: pointer;
+    transition: border-color var(--transition), color var(--transition), background var(--transition);
+}
+
+.filter-chip:hover {
+    border-color: var(--color-primary);
+    color: var(--color-text);
+}
+
+.filter-chip--active {
+    background: rgba(157, 78, 221, 0.15);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
+/* ── Content area ── */
+.content {
+    padding: 1.5rem 2rem;
+}
