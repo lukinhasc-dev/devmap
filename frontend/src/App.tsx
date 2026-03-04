@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom"
 import Sidebar from "./components/Sidebar.tsx"
 import "./styles/App.css"
 import Projects from "./pages/Projects.tsx"
-import Home from "./pages/Home.tsx"
+import Home from "./pages/Dashboard.tsx"
 
 function App() {
   return (
@@ -15,7 +15,7 @@ function App() {
           </Routes>
 
           <Routes>
-            <Route path="/home" element={<Home />} />
+            <Route path="/dashboard" element={<Home />} />
           </Routes>
 
 

@@ -11,15 +11,9 @@ const PORT = process.env.PORT || 3000;
 app.use(cors({ origin: "*" }));
 app.use(express.json());
 
-
 //Rotas das APIs
 app.use("/api/devmap", index);
 
-app.listen(PORT, () => {
-    console.log(`Servidor iniciado na porta ${PORT} 🚀!`);
-
-    //Banco de dados, os migrations serve para criar as tabelas no SQLite.
-    runMigrations();
-});
+runMigrations();
 
 export default app;
