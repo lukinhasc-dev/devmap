@@ -146,7 +146,7 @@ Fique de olho nas [Releases do GitHub](https://github.com/lukinhasc-dev/devmap/r
 
 ---
 
-## �📄 Licença
+## 📄 Licença
 
 Distribuído sob a licença MIT. Veja [`LICENSE`](./LICENSE) para mais informações.
 
