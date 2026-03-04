@@ -15,10 +15,10 @@ export class DashboardService {
 
     getEndpointsStats() {
         const endpointsTotal = db.prepare("SELECT COUNT(*) as total FROM endpoints").get() as CountResult;
-        const endpointGet = db.prepare("SELECT COUNT(*) as total FROM endpoints WHERE rota = 'GET'").get() as CountResult;
-        const endpointPost = db.prepare("SELECT COUNT(*) as total FROM endpoints WHERE rota = 'POST'").get() as CountResult;
-        const endpointPut = db.prepare("SELECT COUNT(*) as total FROM endpoints WHERE rota = 'PUT'").get() as CountResult;
-        const endpointDelete = db.prepare("SELECT COUNT(*) as total FROM endpoints WHERE rota = 'DELETE'").get() as CountResult;
+        const endpointGet = db.prepare("SELECT COUNT(*) as total FROM endpoints WHERE metodo = 'GET'").get() as CountResult;
+        const endpointPost = db.prepare("SELECT COUNT(*) as total FROM endpoints WHERE metodo = 'POST'").get() as CountResult;
+        const endpointPut = db.prepare("SELECT COUNT(*) as total FROM endpoints WHERE metodo = 'PUT'").get() as CountResult;
+        const endpointDelete = db.prepare("SELECT COUNT(*) as total FROM endpoints WHERE metodo = 'DELETE'").get() as CountResult;
 
         return {
             total: endpointsTotal.total,
@@ -52,7 +52,7 @@ export class DashboardService {
     }
 
     getDatabaseStats() {
-        const databaseTotal = db.prepare("SELECT COUNT(*) as total FROM database").get() as CountResult;
+        const databaseTotal = db.prepare("SELECT COUNT(*) as total FROM databases").get() as CountResult;
 
         return {
             total: databaseTotal.total
