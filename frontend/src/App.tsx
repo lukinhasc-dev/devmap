@@ -10,7 +10,7 @@ function App() {
         <Sidebar />
         <main className="app-content">
           <Routes>
-            <Route path="/" element={<Projects />} />
+            <Route path="/projects" element={<Projects />} />
           </Routes>
         </main>
       </div>
