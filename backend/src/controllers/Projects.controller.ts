@@ -43,9 +43,9 @@ export default class ProjectsController {
         const projects: Projects = req.body
 
         try {
-            if (!projects.nome.trim() || !projects.descricao.trim() || !projects.status.trim()) {
+            if (!projects.nome.trim() || !projects.descricao.trim() || !projects.status.trim() || !projects.data_inicio || !projects.responsavel.trim()) {
                 return res.status(400).json({
-                    message: "Todos os campos são obrigatórios",
+                    message: "Todos campos são obrigatórios",
                     error: "Erro ao cadastrar projeto"
                 })
             }
@@ -57,7 +57,7 @@ export default class ProjectsController {
                 })
             }
 
-            const result = db.prepare("INSERT INTO projects (nome, descricao, status) VALUES (?, ?, ?)").run(projects.nome, projects.descricao, projects.status)
+            const result = db.prepare("INSERT INTO projects (nome, descricao, status, data_inicio, data_entrega, responsavel) VALUES (?, ?, ?, ?, ?, ?)").run(projects.nome, projects.descricao, projects.status, projects.data_inicio, projects.data_entrega, projects.responsavel)
             return res.status(201).json({
                 message: "Projeto criado com sucesso!",
                 result
@@ -85,7 +85,7 @@ export default class ProjectsController {
                 })
             }
 
-            const result = db.prepare("UPDATE projects SET nome = ?, descricao = ?, status = ? WHERE id = ?").run(projects.nome, projects.descricao, projects.status, id)
+            const result = db.prepare("UPDATE projects SET nome = ?, descricao = ?, status = ?, data_inicio = ?, data_entrega = ?, responsavel = ? WHERE id = ?").run(projects.nome, projects.descricao, projects.status, projects.data_inicio, projects.data_entrega, projects.responsavel, id)
             return res.status(200).json({
                 message: "Projeto atualizado com sucesso!",
                 result
