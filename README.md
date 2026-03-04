@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./frontend/src/public/devmap-logo.png" alt="DevMap Logo" width="120" />
+  <img src="./frontend/src/public/favicon.svg" alt="DevMap Logo" width="120" />
 </p>
 
 <h1 align="center">DevMap</h1>
