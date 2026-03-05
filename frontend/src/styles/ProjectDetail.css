@@ -1,0 +1,188 @@
+/* ===========================
+   PROJECT DETAIL — DevMap
+   =========================== */
+
+/* ── Layout wrapper ── */
+.project-detail {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 2rem;
+    gap: 1.5rem;
+}
+
+/* ── Header ── */
+.project-detail__header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.project-detail__back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: none;
+    border: 1px solid var(--color-border);
+    color: var(--color-muted);
+    padding: 0.4rem 0.8rem;
+    border-radius: var(--radius);
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color var(--transition), color var(--transition),
+        border-color var(--transition);
+    flex-shrink: 0;
+}
+
+.project-detail__back-btn:hover {
+    background-color: var(--color-elevated);
+    color: var(--color-text);
+    border-color: var(--color-primary);
+}
+
+.project-detail__back-btn svg {
+    width: 14px;
+    height: 14px;
+}
+
+.project-detail__title-group {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+    min-width: 0;
+}
+
+.project-detail__name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Status badge — inherit from Cards.css slug classes */
+.project-detail__status {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.project-detail__status--active {
+    background-color: rgba(16, 185, 129, 0.12);
+    color: #10b981;
+}
+
+.project-detail__status--done {
+    background-color: rgba(99, 102, 241, 0.12);
+    color: #818cf8;
+}
+
+.project-detail__status--paused {
+    background-color: rgba(245, 158, 11, 0.12);
+    color: #fbbf24;
+}
+
+.project-detail__status--unknown {
+    background-color: rgba(156, 163, 175, 0.12);
+    color: #9ca3af;
+}
+
+/* ── Sub-navigation tabs ── */
+.project-detail__nav {
+    display: flex;
+    gap: 0.25rem;
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 0;
+}
+
+.project-detail__nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.1rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--color-muted);
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    border-radius: var(--radius) var(--radius) 0 0;
+    transition: color var(--transition), border-color var(--transition),
+        background-color var(--transition);
+}
+
+.project-detail__nav-link svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
+.project-detail__nav-link:hover {
+    color: var(--color-text);
+    background-color: var(--color-elevated);
+}
+
+.project-detail__nav-link.active {
+    color: var(--color-primary);
+    border-bottom-color: var(--color-primary);
+    background-color: rgba(157, 78, 221, 0.06);
+}
+
+/* ── Content area (Outlet) ── */
+.project-detail__content {
+    flex: 1;
+    overflow-y: auto;
+}
+
+/* ── Sub-page generic ── */
+.project-subpage {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1.5rem 0;
+}
+
+.project-subpage__heading {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.project-subpage__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 4rem 2rem;
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius);
+    text-align: center;
+}
+
+.project-subpage__empty svg {
+    width: 40px;
+    height: 40px;
+    color: var(--color-muted);
+    opacity: 0.5;
+}
+
+.project-subpage__empty-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.project-subpage__empty-desc {
+    font-size: 0.875rem;
+    color: var(--color-muted);
+    max-width: 320px;
+}
