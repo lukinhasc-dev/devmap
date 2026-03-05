@@ -1,4 +1,4 @@
-import "../styles/Cards.css"
+import "../styles/CardsDashboard.css"
 
 // ── Types ───────────────────────────────────────────────
 export type DashboardStats = {
@@ -75,16 +75,16 @@ type StatCardProps = {
 
 function StatCard({ label, value, icon, sub }: StatCardProps) {
     return (
-        <div className="card">
-            <div className="card-header">
-                <h3 className="card-title">{label}</h3>
-                <span className="card-icon">{icon}</span>
+        <div className="dash-card">
+            <div className="dash-card-header">
+                <h3 className="dash-card-title">{label}</h3>
+                <span className="dash-card-icon">{icon}</span>
             </div>
-            <p className="card-total">{value}</p>
+            <p className="dash-card-total">{value}</p>
             {sub && sub.length > 0 && (
-                <div className="card-sub">
+                <div className="dash-card-sub">
                     {sub.map(item => (
-                        <span key={item.label} className="card-sub-item">
+                        <span key={item.label} className="dash-card-sub-item">
                             <strong>{item.value}</strong> {item.label}
                         </span>
                     ))}
