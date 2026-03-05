@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import DefaultPage from "./DefaultPage.tsx"
 import DashboardCards, { type DashboardStats } from "../components/DashboardCards.tsx"
+import DashboardCharts from "../components/DashboardCharts.tsx"
 import { getDashboardStats } from "../services/dashboard.service.ts"
 import "../styles/DefaultPage.css"
 
@@ -20,7 +21,12 @@ export default function Dashboard() {
         <DefaultPage tittle="Dashboard" description="Visão geral de todas as funcionalidades">
             {loading && <p>Carregando...</p>}
             {error && <p style={{ color: "red" }}>{error}</p>}
-            {stats && <DashboardCards stats={stats} />}
+            {stats && (
+                <>
+                    <DashboardCards stats={stats} />
+                    <DashboardCharts stats={stats} />
+                </>
+            )}
         </DefaultPage>
     )
 }
