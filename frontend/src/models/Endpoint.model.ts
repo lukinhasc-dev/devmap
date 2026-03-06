@@ -1,5 +1,6 @@
 export interface Endpoint {
     id: number;
+    project_id?: number;
     nome: string;
     descricao: string;
     rota: string;
