@@ -71,7 +71,8 @@ function isConstraintLine(line: string): boolean {
         upper.startsWith("CHECK") ||
         upper.startsWith("CONSTRAINT") ||
         upper.startsWith("INDEX") ||
-        upper.startsWith("KEY ")
+        upper.startsWith("KEY ") ||
+        upper.startsWith("FULLTEXT")
     );
 }
 
@@ -129,13 +130,16 @@ export class SchemaService {
             return { tables, rawSql: sql, errors: ["Schema vazio."] };
         }
 
-        // Regex para capturar cada bloco CREATE TABLE ... (...)
-        const tableRegex = /CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?[`"[\]]?(\w+)[`"[\]]?\s*\(([^;]*)\)/gis;
+        // Regex super seguro para strings multilinha com ou sem ponto-e-vírgula.
+        // Captura o nome da tabela e pega tudo dentro dos parênteses lazily até fechar a tabela.
+        const tableRegex = /CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?([a-zA-Z0-9_."`[\]]+)\s*\(([\s\S]*?)\)\s*(?:;|\s*$|\bCREATE\s+TABLE\b|\bINSERT\b|\bCOPY\b|\bALTER\b)/gis;
 
         let match: RegExpExecArray | null;
 
         while ((match = tableRegex.exec(sql)) !== null) {
-            const tableName = match[1] ?? "unknown_table";
+            let tableName = match[1] ?? "unknown_table";
+            // Clean table name out of quotes and schema prefix if any
+            tableName = tableName.replace(/[`"[\]]/g, "").split(".").pop() || tableName;
             const tableBody = match[2] ?? "";
 
             try {

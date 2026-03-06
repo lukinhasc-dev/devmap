@@ -4,15 +4,22 @@ import type { Database } from "../models/Database.model";
 
 export default class DatabaseController {
     async getDatabases(req: Request, res: Response) {
+        const projectId = req.query.project_id ? Number(req.query.project_id) : undefined;
+
         try {
-            const result = db.prepare("SELECT * FROM databases").all()
-            return res.status(200).json(result)
+            let result;
+            if (projectId) {
+                result = db.prepare("SELECT * FROM databases WHERE project_id = ?").all(projectId);
+            } else {
+                result = db.prepare("SELECT * FROM databases").all();
+            }
+            return res.status(200).json(result);
         } catch (error) {
-            console.log(error)
+            console.error(error);
             return res.status(500).json({
                 message: "Erro ao buscar bancos de dados",
                 error: error instanceof Error ? error.message : "Erro desconhecido"
-            })
+            });
         }
     }
 

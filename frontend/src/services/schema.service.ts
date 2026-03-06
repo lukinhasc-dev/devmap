@@ -2,7 +2,7 @@ import api from "./api";
 
 export default class SchemaService {
     async getSchemaByDatabaseId(id: number) {
-        const response = await api.get(`/databases/${id}/schema`);
+        const response = await api.get(`/schema/${id}/schema`);
         return response.data;
     }
 
