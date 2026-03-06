@@ -3,12 +3,7 @@ export interface Database {
     project_id: number;
     nome: string;
     tipo_bd: string;
-    host: string;
-    porta: number;
-    query_bd: string;
-    usuario: string;
-    senha: string;
-    observacoes: string;
+    schema: string;
     created_at: string;
     updated_at: string
 }

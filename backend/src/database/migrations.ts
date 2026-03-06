@@ -60,14 +60,10 @@ export function databases() {
 
             nome TEXT NOT NULL,
             tipo_bd TEXT NOT NULL, -- mysql, postgres, sqlite, mongo
-            host TEXT,
-            porta TEXT,
-            query_bd TEXT, -- Query do banco de dados para facilitar entendimento
-            usuario TEXT,
-            senha TEXT,
-            observacoes TEXT,
+            schema TEXT NOT NULL,
 
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 
             FOREIGN KEY (project_id)
                 REFERENCES projects(id)
