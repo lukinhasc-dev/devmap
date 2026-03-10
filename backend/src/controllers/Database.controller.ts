@@ -4,15 +4,22 @@ import type { Database } from "../models/Database.model";
 
 export default class DatabaseController {
     async getDatabases(req: Request, res: Response) {
+        const projectId = req.query.project_id ? Number(req.query.project_id) : undefined;
+
         try {
-            const result = db.prepare("SELECT * FROM databases").all()
-            return res.status(200).json(result)
+            let result;
+            if (projectId) {
+                result = db.prepare("SELECT * FROM databases WHERE project_id = ?").all(projectId);
+            } else {
+                result = db.prepare("SELECT * FROM databases").all();
+            }
+            return res.status(200).json(result);
         } catch (error) {
-            console.log(error)
+            console.error(error);
             return res.status(500).json({
                 message: "Erro ao buscar bancos de dados",
                 error: error instanceof Error ? error.message : "Erro desconhecido"
-            })
+            });
         }
     }
 
@@ -36,14 +43,14 @@ export default class DatabaseController {
         const database: Database = req.body;
 
         try {
-            if (!database.nome.trim() || !database.tipo_bd.trim() || !database.query_bd.trim()) {
+            if (!database.nome.trim() || !database.tipo_bd.trim() || !database.schema.trim()) {
                 return res.status(400).json({
-                    message: "Nome, tipo e query do banco de dados são obrigatórios",
+                    message: "Nome, tipo e schema do banco de dados são obrigatórios",
                     error: "Erro interno do servidor"
                 });
             }
 
-            const result = db.prepare("INSERT INTO databases (project_id, nome, tipo_bd, host, porta, query_bd, usuario, senha, observacoes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)").run(database.project_id, database.nome, database.tipo_bd, database.host, database.porta, database.query_bd, database.usuario, database.senha, database.observacoes)
+            const result = db.prepare("INSERT INTO databases (project_id, nome, tipo_bd, schema) VALUES (?, ?, ?, ?)").run(database.project_id, database.nome, database.tipo_bd, database.schema)
             return res.status(201).json({
                 message: "Banco de dados criado com sucesso!",
                 result
@@ -70,7 +77,7 @@ export default class DatabaseController {
                 });
             }
 
-            const result = db.prepare("UPDATE databases SET project_id = ?, nome = ?, tipo_bd = ?, host = ?, porta = ?, query_bd = ?, usuario = ?, senha = ?, observacoes = ? WHERE id = ?").run(database.project_id, database.nome, database.tipo_bd, database.host, database.porta, database.query_bd, database.usuario, database.senha, database.observacoes, id);
+            const result = db.prepare("UPDATE databases SET project_id = ?, nome = ?, tipo_bd = ?, schema = ? WHERE id = ?").run(database.project_id, database.nome, database.tipo_bd, database.schema, id);
             return res.status(200).json({
                 message: "Banco de dados atualizado com sucesso!",
                 result

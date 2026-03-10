@@ -6,6 +6,11 @@ export const getEndpoints = async () => {
     return response.data;
 };
 
+export const getEndpointsByProject = async (projectId: number) => {
+    const response = await api.get(`/endpoints?project_id=${projectId}`);
+    return response.data;
+};
+
 export const createEndpoint = async (endpoint: Endpoint) => {
     const response = await api.post("/endpoints", endpoint);
     return response.data;

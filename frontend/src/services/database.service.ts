@@ -6,6 +6,11 @@ export const getDatabases = async () => {
     return response.data;
 };
 
+export const getDatabasesByProject = async (projectId: number) => {
+    const response = await api.get(`/databases?project_id=${projectId}`);
+    return response.data;
+};
+
 export const getDatabaseById = async (id: number) => {
     const response = await api.get(`/databases/${id}`);
     return response.data;
