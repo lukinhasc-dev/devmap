@@ -1,12 +1,10 @@
 import { NavLink } from "react-router-dom"
-import { Home, FolderGit2, Database, Plug, CheckSquare, Map } from "lucide-react"
+import { Home, FolderGit2, Plug, CheckSquare } from "lucide-react"
 import "../styles/Sidebar.css"
 
 const navItems = [
     { to: "/dashboard", icon: Home, label: "Dashboard" },
     { to: "/projects", icon: FolderGit2, label: "Projects" },
-    { to: "/github", icon: Map, label: "GitHub" },
-    { to: "/databases", icon: Database, label: "Databases" },
     { to: "/endpoints", icon: Plug, label: "Endpoints" },
     { to: "/tasks", icon: CheckSquare, label: "Tasks" },
 ]
@@ -25,7 +23,7 @@ export default function Sidebar() {
                         key={to}
                         to={to}
                         end={to === "/dashboard"}
-                        className={({ isActive }) =>
+                        className={({ isActive }: { isActive: boolean }) =>
                             `sidebar__item ${isActive ? "sidebar__item--active" : ""}`
                         }
                     >
