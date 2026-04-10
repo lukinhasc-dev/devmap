@@ -6,7 +6,7 @@ import index from "./src/routes/index";
 
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5173;
 
 app.use(cors({ origin: "*" }));
 app.use(express.json({ limit: "50mb" }));
