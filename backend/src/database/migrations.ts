@@ -10,6 +10,9 @@ export function runMigrations() {
     databases();
     github();
     tasks();
+    taskStatuses();
+    taskLabels();
+    migrateTasksColumns();
 }
 
 function columnExists(table: string, column: string): boolean {
@@ -177,4 +180,51 @@ export function tasks() {
     `);
 
     console.log("🚀 Tabela tasks criada!");
+}
+
+export function taskStatuses() {
+    db.exec(`
+        CREATE TABLE IF NOT EXISTS task_statuses (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            project_id INTEGER NOT NULL,
+
+            chave TEXT NOT NULL,
+            nome TEXT NOT NULL,
+            cor TEXT,
+            ordem INTEGER DEFAULT 0,
+
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+            FOREIGN KEY (project_id)
+                REFERENCES projects(id)
+                ON DELETE CASCADE
+        );
+    `);
+
+    console.log("🚀 Tabela task_statuses criada!");
+}
+
+export function taskLabels() {
+    db.exec(`
+        CREATE TABLE IF NOT EXISTS task_labels (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            project_id INTEGER NOT NULL,
+
+            nome TEXT NOT NULL,
+            cor TEXT,
+
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+            FOREIGN KEY (project_id)
+                REFERENCES projects(id)
+                ON DELETE CASCADE
+        );
+    `);
+
+    console.log("🚀 Tabela task_labels criada!");
+}
+
+export function migrateTasksColumns() {
+    addColumnIfNotExists("tasks", "labels", "TEXT");
+    addColumnIfNotExists("tasks", "priority", "TEXT");
 }

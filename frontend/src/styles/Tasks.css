@@ -1,0 +1,196 @@
+.tasks-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+}
+
+.kanban {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+}
+
+.kanban__col {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    display: flex;
+    flex-direction: column;
+    min-height: 120px;
+    flex: 1 0 260px;
+    min-width: 260px;
+    transition: border-color var(--transition), background var(--transition);
+}
+
+.kanban__col--over {
+    border-color: var(--color-primary);
+    background: var(--color-elevated);
+}
+
+.kanban__col-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 0.85rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.kanban__col-title {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.kanban__dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.kanban__col-count {
+    font-size: 0.72rem;
+    color: var(--color-muted);
+    background: var(--color-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    padding: 0.1rem 0.5rem;
+}
+
+.kanban__col-add {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    background: transparent;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    color: var(--color-muted);
+    transition: color var(--transition), border-color var(--transition);
+}
+
+.kanban__col-add:hover {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+.kanban__col-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding: 0.75rem;
+    min-height: 60px;
+}
+
+.kanban__empty {
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--color-muted);
+    padding: 1.2rem 0.5rem;
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius);
+}
+
+.kanban__card {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    padding: 0.7rem 0.75rem;
+    cursor: grab;
+    transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+}
+
+.kanban__card:hover {
+    border-color: var(--color-primary);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+}
+
+.kanban__card:active {
+    cursor: grabbing;
+}
+
+.kanban__card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.kanban__card-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-text);
+    line-height: 1.35;
+    flex: 1;
+}
+
+.kanban__card-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+    flex-shrink: 0;
+}
+
+.kanban__card-desc {
+    font-size: 0.78rem;
+    color: var(--color-muted);
+    margin-top: 0.4rem;
+    line-height: 1.45;
+}
+
+.kanban__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-top: 0.5rem;
+}
+
+.kanban__priority,
+.kanban__label {
+    font-size: 0.68rem;
+    font-weight: 600;
+    border: 1px solid;
+    border-radius: 999px;
+    padding: 0.1rem 0.5rem;
+    background: transparent;
+}
+
+.kanban__card-project {
+    display: inline-block;
+    margin-top: 0.5rem;
+    font-size: 0.7rem;
+    color: var(--color-muted);
+    background: rgba(157, 78, 221, 0.08);
+    border: 1px solid rgba(157, 78, 221, 0.2);
+    border-radius: 4px;
+    padding: 0.1rem 0.45rem;
+}
+
+/* ─── Picker de labels no formulário ─── */
+.task-label-picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.task-label-chip {
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: 1px solid;
+    border-radius: 999px;
+    padding: 0.25rem 0.7rem;
+    background: transparent;
+    transition: transform var(--transition);
+}
+
+.task-label-chip:hover {
+    transform: translateY(-1px);
+}

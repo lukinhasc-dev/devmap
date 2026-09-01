@@ -10,6 +10,7 @@ import ProjectGithub from "./pages/project/ProjectGithub.tsx"
 import ProjectDatabases from "./pages/project/ProjectDatabases.tsx"
 import ProjectEndpoints from "./pages/project/ProjectEndpoints.tsx"
 import ProjectControllers from "./pages/project/ProjectController.tsx"
+import ProjectTasks from "./pages/project/ProjectTasks.tsx"
 
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
               <Route path="databases" element={<ProjectDatabases />} />
               <Route path="endpoints" element={<ProjectEndpoints />} />
               <Route path="controllers" element={<ProjectControllers />} />
+              <Route path="tasks" element={<ProjectTasks />} />
             </Route>
           </Routes>
         </main>

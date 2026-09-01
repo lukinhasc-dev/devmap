@@ -1,22 +1,16 @@
 import { useEffect, useState } from "react";
-import DefaultPage from "./DefaultPage";
-import ModalDefault from "../components/ModalDefault";
-import KanbanBoard, { type KanbanColumn, parseLabelIds, stringifyLabelIds } from "../components/KanbanBoard";
-import TaskForm, { type TaskFormData } from "../components/TaskForm";
-import { getTasks, createTask, updateTask, deleteTask } from "../services/tasks.service";
-import { getProjects } from "../services/projects.service";
-import type { Tasks as Task } from "../models/Tasks.model";
-import type { Projects } from "../models/Projects.model";
-import "../styles/DefaultPage.css";
-import "../styles/Tasks.css";
-
-type ProjectWithId = Projects & { id: number };
-
-const BASE_STATUSES: KanbanColumn[] = [
-    { chave: "pendente", nome: "Pendente", cor: "#9ca3af" },
-    { chave: "em andamento", nome: "Em Andamento", cor: "#60a5fa" },
-    { chave: "concluida", nome: "Concluída", cor: "#34d399" },
-];
+import { useParams } from "react-router-dom";
+import ModalDefault from "../../components/ModalDefault";
+import KanbanBoard, { type KanbanColumn, parseLabelIds, stringifyLabelIds } from "../../components/KanbanBoard";
+import TaskForm, { type TaskFormData } from "../../components/TaskForm";
+import { getTasks, createTask, updateTask, deleteTask } from "../../services/tasks.service";
+import { getStatusesByProject } from "../../services/taskstatus.service";
+import { getLabelsByProject } from "../../services/tasklabel.service";
+import { getKanbanPrefs, type KanbanPrefs } from "../../services/preferences";
+import type { Tasks as Task } from "../../models/Tasks.model";
+import type { TaskStatus } from "../../models/TaskStatus.model";
+import type { TaskLabel } from "../../models/TaskLabel.model";
+import "../../styles/Tasks.css";
 
 const EMPTY_FORM: TaskFormData = {
     titulo: "",
@@ -26,25 +20,6 @@ const EMPTY_FORM: TaskFormData = {
     priority: "",
     labels: [],
 };
-
-function titleCase(text: string): string {
-    return text
-        .split(/[\s-]+/)
-        .map((w) => (w ? w[0].toUpperCase() + w.slice(1) : w))
-        .join(" ");
-}
-
-function buildColumns(tasks: Task[]): KanbanColumn[] {
-    const cols = [...BASE_STATUSES];
-    const known = new Set(cols.map((c) => c.chave));
-    for (const t of tasks) {
-        if (t.status && !known.has(t.status)) {
-            known.add(t.status);
-            cols.push({ chave: t.status, nome: titleCase(t.status), cor: "#a78bfa" });
-        }
-    }
-    return cols;
-}
 
 function IconPlus() {
     return (
@@ -56,9 +31,14 @@ function IconPlus() {
     );
 }
 
-export default function Tasks() {
+export default function ProjectTasks() {
+    const { id } = useParams<{ id: string }>();
+    const projectId = Number(id);
+
     const [tasks, setTasks] = useState<Task[]>([]);
-    const [projects, setProjects] = useState<ProjectWithId[]>([]);
+    const [statuses, setStatuses] = useState<TaskStatus[]>([]);
+    const [labels, setLabels] = useState<TaskLabel[]>([]);
+    const [prefs, setPrefs] = useState<KanbanPrefs>({ showPriority: true, showLabels: true });
     const [loading, setLoading] = useState(true);
 
     const [modalOpen, setModalOpen] = useState(false);
@@ -69,23 +49,35 @@ export default function Tasks() {
 
     function fetchAll() {
         setLoading(true);
-        Promise.all([getTasks(), getProjects()])
-            .then(([tasksData, projectsData]) => {
-                setTasks(tasksData);
-                setProjects(projectsData);
+        Promise.all([getTasks(), getStatusesByProject(projectId), getLabelsByProject(projectId)])
+            .then(([tasksData, statusesData, labelsData]) => {
+                setTasks((tasksData as Task[]).filter((t) => t.project_id === projectId));
+                setStatuses(statusesData);
+                setLabels(labelsData);
             })
             .catch(console.error)
             .finally(() => setLoading(false));
     }
 
-    useEffect(() => { fetchAll(); }, []);
+    useEffect(() => {
+        fetchAll();
+        setPrefs(getKanbanPrefs(projectId));
+    }, [projectId]);
 
-    const projectsById = new Map(projects.map((p) => [p.id, p]));
-    const columns = buildColumns(tasks);
+    const columns: KanbanColumn[] = statuses.map((s) => ({ chave: s.chave, nome: s.nome, cor: s.cor }));
+    const labelsById = new Map(labels.map((l) => [l.id, l]));
+    const firstStatus = statuses[0]?.chave ?? "pendente";
 
-    function handleAdd(status: string = "pendente") {
+    function resolveLabels(task: Task) {
+        return parseLabelIds(task.labels)
+            .map((lid) => labelsById.get(lid))
+            .filter((l): l is TaskLabel => Boolean(l))
+            .map((l) => ({ nome: l.nome, cor: l.cor }));
+    }
+
+    function handleAdd(status?: string) {
         setEditingId(null);
-        setForm({ ...EMPTY_FORM, status });
+        setForm({ ...EMPTY_FORM, status: status ?? firstStatus });
         setFormError("");
         setModalOpen(true);
     }
@@ -109,17 +101,13 @@ export default function Tasks() {
             setFormError("Título e Descrição são obrigatórios.");
             return;
         }
-        if (!form.project_id) {
-            setFormError("Selecione um projeto.");
-            return;
-        }
         setSaving(true);
         try {
             const payload = {
                 titulo: form.titulo,
                 descricao: form.descricao,
                 status: form.status,
-                project_id: Number(form.project_id),
+                project_id: projectId,
                 labels: stringifyLabelIds(form.labels),
                 priority: form.priority || null,
             } as unknown as Task;
@@ -138,23 +126,23 @@ export default function Tasks() {
         }
     }
 
-    async function handleDelete(id: number) {
+    async function handleDelete(taskId: number) {
         if (!window.confirm("Deseja realmente excluir esta tarefa?")) return;
         try {
-            await deleteTask(id);
+            await deleteTask(taskId);
             fetchAll();
         } catch (err) {
             console.error(err);
         }
     }
 
-    async function handleMove(id: number, chave: string) {
-        const task = tasks.find((t) => t.id === id);
+    async function handleMove(taskId: number, chave: string) {
+        const task = tasks.find((t) => t.id === taskId);
         if (!task || task.status === chave) return;
 
-        setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, status: chave } : t)));
+        setTasks((prev) => prev.map((t) => (t.id === taskId ? { ...t, status: chave } : t)));
         try {
-            await updateTask(id, { ...task, status: chave } as Task);
+            await updateTask(taskId, { ...task, status: chave } as Task);
         } catch (err) {
             console.error(err);
             fetchAll();
@@ -162,16 +150,20 @@ export default function Tasks() {
     }
 
     return (
-        <DefaultPage tittle="Tasks" description="Kanban geral de tarefas de todos os projetos.">
-            <div className="tasks-toolbar">
-                <button className="ep-subpage-add-btn" onClick={() => handleAdd()}>
-                    <IconPlus />
-                    Nova Tarefa
-                </button>
+        <div className="project-subpage">
+            <div className="ep-subpage-header">
+                <h2 className="project-subpage__heading">Tasks</h2>
+
+                <div className="ep-subpage-toolbar">
+                    <button className="ep-subpage-add-btn" onClick={() => handleAdd()}>
+                        <IconPlus />
+                        Nova Tarefa
+                    </button>
+                </div>
             </div>
 
             {loading ? (
-                <p style={{ color: "var(--color-muted)", padding: "1rem 0" }}>Carregando tarefas...</p>
+                <p className="project-subpage__empty-desc" style={{ padding: "1rem 0" }}>Carregando tarefas...</p>
             ) : (
                 <KanbanBoard
                     tasks={tasks}
@@ -180,9 +172,9 @@ export default function Tasks() {
                     onDelete={handleDelete}
                     onMove={handleMove}
                     onAddInColumn={handleAdd}
-                    showPriority
-                    showLabels={false}
-                    getProjectName={(t) => projectsById.get(t.project_id)?.nome}
+                    showPriority={prefs.showPriority}
+                    showLabels={prefs.showLabels}
+                    getLabels={resolveLabels}
                 />
             )}
 
@@ -198,8 +190,8 @@ export default function Tasks() {
                 <TaskForm
                     form={form}
                     error={formError}
-                    statuses={BASE_STATUSES}
-                    projects={projects}
+                    statuses={columns}
+                    availableLabels={labels}
                     onChange={(field, value) => {
                         setForm((p) => ({ ...p, [field]: value }));
                         setFormError("");
@@ -210,6 +202,6 @@ export default function Tasks() {
                     }}
                 />
             </ModalDefault>
-        </DefaultPage>
+        </div>
     );
 }
