@@ -1,5 +1,6 @@
 import { Router } from "express";
 import endpointRoutes from "./endpoint.routes";
+import endpointGroupRoutes from "./endpointgroup.routes";
 import projectsRoutes from "./projects.routes";
 import databaseRoutes from "./database.routes";
 import githubRoutes from "./github.routes";
@@ -10,6 +11,7 @@ import schemaRoutes from "./schema.routes";
 const router = Router();
 
 router.use("/endpoints", endpointRoutes);
+router.use("/endpoint-groups", endpointGroupRoutes);
 router.use("/projects", projectsRoutes);
 router.use("/databases", databaseRoutes);
 router.use("/github", githubRoutes);

@@ -1,13 +1,11 @@
 import axios, { type Method } from "axios";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
 export type TestRouteRequest = {
     url: string;
     method: Method;
-    body?: string;     // JSON string
-    headers?: string;  // JSON string ex: { "Authorization": "Bearer token" }
-    timeout?: number;  // ms, default 10000
+    body?: string;
+    headers?: string;
+    timeout?: number;
 };
 
 export type TestRouteResponse<T = any> = {
@@ -15,16 +13,17 @@ export type TestRouteResponse<T = any> = {
     status: number;
     statusText: string;
     data: T | null;
+    raw: string;
     error: any;
     durationMs: number;
-    isHtml: boolean;       // true quando o servidor retornou HTML
-    contentType: string;   // Content-Type original da resposta
+    isHtml: boolean;
+    contentType: string;
+    responseHeaders: Record<string, string>;
+    sizeBytes: number;
 };
 
-// ─── Mapeamento de status HTTP ────────────────────────────────────────────────
-
 const STATUS_TEXT: Record<number, string> = {
-    200: "OK", 201: "Created", 204: "No Content",
+    200: "OK", 201: "Created", 202: "Accepted", 204: "No Content",
     301: "Moved Permanently", 302: "Found", 304: "Not Modified",
     400: "Bad Request", 401: "Unauthorized", 403: "Forbidden",
     404: "Not Found", 405: "Method Not Allowed", 409: "Conflict",
@@ -33,14 +32,33 @@ const STATUS_TEXT: Record<number, string> = {
     503: "Service Unavailable", 504: "Gateway Timeout",
 };
 
-// ─── Service ─────────────────────────────────────────────────────────────────
+function byteSize(text: string): number {
+    try {
+        return new TextEncoder().encode(text).length;
+    } catch {
+        return text.length;
+    }
+}
+
+function normalizeHeaders(raw: any): Record<string, string> {
+    if (!raw) return {};
+    try {
+        if (typeof raw.toJSON === "function") return raw.toJSON();
+    } catch {
+        return {};
+    }
+    const out: Record<string, string> = {};
+    for (const key of Object.keys(raw)) {
+        out[key] = String(raw[key]);
+    }
+    return out;
+}
 
 export const testEndpointRoute = async <T = any>(
     req: TestRouteRequest
 ): Promise<TestRouteResponse<T>> => {
     const start = performance.now();
 
-    // Parseia body JSON
     let parsedBody: any = undefined;
     if (req.body && req.body.trim()) {
         try {
@@ -48,13 +66,13 @@ export const testEndpointRoute = async <T = any>(
         } catch {
             return {
                 ok: false, status: 0, statusText: "Erro de parse",
-                data: null, error: "Body inválido: o JSON fornecido não é válido.",
+                data: null, raw: "", error: "Body inválido: o JSON fornecido não é válido.",
                 durationMs: 0, isHtml: false, contentType: "",
+                responseHeaders: {}, sizeBytes: 0,
             };
         }
     }
 
-    // Parseia headers extras
     let extraHeaders: Record<string, string> = {};
     if (req.headers && req.headers.trim()) {
         try {
@@ -62,8 +80,9 @@ export const testEndpointRoute = async <T = any>(
         } catch {
             return {
                 ok: false, status: 0, statusText: "Erro de parse",
-                data: null, error: "Headers inválidos: o JSON fornecido não é válido.",
+                data: null, raw: "", error: "Headers inválidos: o JSON fornecido não é válido.",
                 durationMs: 0, isHtml: false, contentType: "",
+                responseHeaders: {}, sizeBytes: 0,
             };
         }
     }
@@ -79,26 +98,22 @@ export const testEndpointRoute = async <T = any>(
                 ...extraHeaders,
             },
             timeout: req.timeout ?? 10_000,
-            validateStatus: () => true,      // nunca lança exceção em 4xx/5xx
-            transformResponse: (raw) => raw, // recebe como string bruta, sem parse automático
+            validateStatus: () => true,
+            transformResponse: (raw) => raw,
         });
 
         const durationMs = Math.round(performance.now() - start);
         const contentType = String(response.headers?.["content-type"] ?? "");
         const isHtml = contentType.includes("text/html");
+        const raw = typeof response.data === "string" ? response.data : String(response.data ?? "");
 
-        // Tenta parsear JSON; se não conseguir, mantém como texto
         let data: any = null;
-        if (isHtml) {
-            data = null; // HTML não será exibido como conteúdo
-        } else if (typeof response.data === "string" && response.data.trim()) {
+        if (raw.trim()) {
             try {
-                data = JSON.parse(response.data);
+                data = JSON.parse(raw);
             } catch {
-                data = response.data; // mantém como texto simples
+                data = raw;
             }
-        } else {
-            data = response.data;
         }
 
         const status = response.status;
@@ -109,10 +124,13 @@ export const testEndpointRoute = async <T = any>(
             status,
             statusText,
             data,
+            raw,
             error: null,
             durationMs,
             isHtml,
             contentType,
+            responseHeaders: normalizeHeaders(response.headers),
+            sizeBytes: byteSize(raw),
         };
     } catch (error: any) {
         const durationMs = Math.round(performance.now() - start);
@@ -126,12 +144,15 @@ export const testEndpointRoute = async <T = any>(
             status: error?.response?.status ?? 0,
             statusText: isTimeout ? "Timeout" : isCors ? "Erro de Rede / CORS" : "Erro",
             data: null,
+            raw: "",
             error: isTimeout
                 ? `Timeout após ${req.timeout ?? 10_000}ms`
                 : (error?.message ?? "Erro desconhecido"),
             durationMs,
             isHtml: false,
             contentType: "",
+            responseHeaders: normalizeHeaders(error?.response?.headers),
+            sizeBytes: 0,
         };
     }
 };

@@ -4,23 +4,36 @@ export function runMigrations() {
     db.pragma("foreign_keys = ON");
 
     projects();
+    endpointGroups();
     endpoints();
+    migrateEndpointsColumns();
     databases();
     github();
     tasks();
 }
 
-export function endpoints() {
+function columnExists(table: string, column: string): boolean {
+    const cols = db.prepare(`PRAGMA table_info(${table})`).all() as { name: string }[];
+    return cols.some((c) => c.name === column);
+}
+
+function addColumnIfNotExists(table: string, column: string, definition: string) {
+    if (!columnExists(table, column)) {
+        db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition};`);
+        console.log(`➕ Coluna "${column}" adicionada em "${table}"`);
+    }
+}
+
+export function endpointGroups() {
     db.exec(`
-        CREATE TABLE IF NOT EXISTS endpoints (
+        CREATE TABLE IF NOT EXISTS endpoint_groups (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            project_id INTEGER NOT NULL,
+
             nome TEXT NOT NULL,
             descricao TEXT,
-            rota TEXT NOT NULL,
-            metodo TEXT NOT NULL, -- GET, POST, etc
-            controller_nome TEXT,
-
-            project_id INTEGER NOT NULL,
+            base_url TEXT,
+            ordem INTEGER DEFAULT 0,
 
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
             updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -31,7 +44,55 @@ export function endpoints() {
         );
     `);
 
+    console.log("🚀 Tabela endpoint_groups criada com sucesso!");
+}
+
+export function endpoints() {
+    db.exec(`
+        CREATE TABLE IF NOT EXISTS endpoints (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nome TEXT NOT NULL,
+            descricao TEXT,
+            rota TEXT NOT NULL,
+            metodo TEXT NOT NULL,
+            controller_nome TEXT,
+
+            headers TEXT,
+            body TEXT,
+            query_params TEXT,
+
+            auth_type TEXT,
+            auth_config TEXT,
+
+            project_id INTEGER NOT NULL,
+            group_id INTEGER,
+
+            ordem INTEGER DEFAULT 0,
+
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+            FOREIGN KEY (project_id)
+                REFERENCES projects(id)
+                ON DELETE CASCADE,
+
+            FOREIGN KEY (group_id)
+                REFERENCES endpoint_groups(id)
+                ON DELETE SET NULL
+        );
+    `);
+
     console.log("🚀 Tabela endpoints criada com sucesso!");
+}
+
+export function migrateEndpointsColumns() {
+    addColumnIfNotExists("endpoints", "headers", "TEXT");
+    addColumnIfNotExists("endpoints", "body", "TEXT");
+    addColumnIfNotExists("endpoints", "query_params", "TEXT");
+    addColumnIfNotExists("endpoints", "auth_type", "TEXT");
+    addColumnIfNotExists("endpoints", "auth_config", "TEXT");
+    addColumnIfNotExists("endpoints", "group_id", "INTEGER");
+    addColumnIfNotExists("endpoints", "ordem", "INTEGER DEFAULT 0");
 }
 
 export function projects() {
