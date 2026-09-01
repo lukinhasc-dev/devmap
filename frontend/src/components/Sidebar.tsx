@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom"
-import { Home, FolderGit2, Plug, CheckSquare } from "lucide-react"
+import { Home, FolderGit2, Plug, CheckSquare, Settings } from "lucide-react"
 import "../styles/Sidebar.css"
 
 const navItems = [
@@ -7,6 +7,7 @@ const navItems = [
     { to: "/projects", icon: FolderGit2, label: "Projects" },
     { to: "/endpoints", icon: Plug, label: "Endpoints" },
     { to: "/tasks", icon: CheckSquare, label: "Tasks" },
+    { to: "/settings", icon: Settings, label: "Configurações" },
 ]
 
 export default function Sidebar() {
