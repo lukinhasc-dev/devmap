@@ -1,9 +1,4 @@
-import { useState, useEffect, useRef } from "react";
-import { useParams } from "react-router-dom";
-import ModalDefault from "../../components/ModalDefault";
 import "../../styles/Endpoints.css";
-
-
 
 export default function ProjectEndpoints() {
     return (

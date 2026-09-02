@@ -1,0 +1,252 @@
+.settings-project-bar {
+    margin-bottom: 1.5rem;
+}
+
+/* ─── Card de configurações (lista de linhas) ─── */
+.settings-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.settings-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    width: 100%;
+    padding: 1rem 1.15rem;
+    border-bottom: 1px solid var(--color-border);
+    text-align: left;
+    background: transparent;
+}
+
+.settings-card > .settings-row:last-child,
+.settings-card > .settings-section:last-child {
+    border-bottom: none;
+}
+
+.settings-section {
+    border-bottom: 1px solid var(--color-border);
+}
+
+.settings-row__main {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-width: 0;
+}
+
+.settings-row__title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.settings-row__desc {
+    font-size: 0.8rem;
+    color: var(--color-muted);
+    line-height: 1.4;
+}
+
+.settings-row__control {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-shrink: 0;
+}
+
+/* Linha clicável (seção expansível) */
+.settings-row--button {
+    cursor: pointer;
+    border-bottom: none;
+    transition: background var(--transition);
+}
+
+.settings-row--button:hover {
+    background: var(--color-elevated);
+}
+
+.settings-row__count {
+    font-size: 0.72rem;
+    color: var(--color-muted);
+    background: var(--color-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    padding: 0.1rem 0.55rem;
+}
+
+.settings-row__chevron {
+    display: inline-flex;
+    color: var(--color-muted);
+    transition: transform var(--transition);
+}
+
+.settings-row--open .settings-row__chevron {
+    transform: rotate(90deg);
+}
+
+.settings-row__body {
+    padding: 0 1.15rem 1.15rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+/* ─── Switch (toggle) ─── */
+.switch {
+    position: relative;
+    width: 42px;
+    height: 24px;
+    border-radius: 999px;
+    background: var(--color-border);
+    border: none;
+    padding: 0;
+    transition: background var(--transition);
+    flex-shrink: 0;
+}
+
+.switch--on {
+    background: var(--color-primary);
+}
+
+.switch:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.switch__thumb {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    transition: transform var(--transition);
+}
+
+.switch--on .switch__thumb {
+    transform: translateX(18px);
+}
+
+/* ─── Lista de itens (status / labels) ─── */
+.settings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.settings-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 0.6rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-bg);
+}
+
+.settings-item__swatch {
+    width: 14px;
+    height: 14px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.settings-item__name {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--color-text);
+    flex: 1;
+}
+
+.settings-item__chave {
+    font-family: 'Fira Code', 'Cascadia Code', monospace;
+    font-size: 0.68rem;
+    color: var(--color-muted);
+    background: var(--color-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    padding: 0.1rem 0.4rem;
+}
+
+.settings-item__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+}
+
+.settings-item__actions .card-icon-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.settings-empty {
+    font-size: 0.8rem;
+    color: var(--color-muted);
+    padding: 0.9rem;
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius);
+}
+
+.settings-add-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    align-self: flex-start;
+    background: transparent;
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius);
+    color: var(--color-muted);
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 0.45rem 0.85rem;
+    transition: color var(--transition), border-color var(--transition);
+}
+
+.settings-add-btn:hover {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+/* ─── Seletor de cor ─── */
+.settings-color {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+}
+
+.settings-color__swatches {
+    display: flex;
+    gap: 0.35rem;
+}
+
+.settings-color__swatch {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    border: 2px solid transparent;
+    transition: transform var(--transition), border-color var(--transition);
+}
+
+.settings-color__swatch:hover {
+    transform: scale(1.1);
+}
+
+.settings-color__swatch--active {
+    border-color: var(--color-text);
+}
+
+.settings-color__input {
+    width: 40px;
+    height: 28px;
+    padding: 0;
+    background: transparent;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    cursor: pointer;
+}

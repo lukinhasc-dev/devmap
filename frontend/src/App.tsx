@@ -10,6 +10,8 @@ import ProjectGithub from "./pages/project/ProjectGithub.tsx"
 import ProjectDatabases from "./pages/project/ProjectDatabases.tsx"
 import ProjectEndpoints from "./pages/project/ProjectEndpoints.tsx"
 import ProjectControllers from "./pages/project/ProjectController.tsx"
+import ProjectTasks from "./pages/project/ProjectTasks.tsx"
+import Settings from "./pages/Settings.tsx"
 
 
 function App() {
@@ -23,11 +25,13 @@ function App() {
             <Route path="/projects" element={<Projects />} />
             <Route path="/endpoints" element={<Endpoints />} />
             <Route path="/tasks" element={<Tasks />} />
+            <Route path="/settings" element={<Settings />} />
             <Route path="/projects/:id" element={<ProjectDetail />}>
               <Route path="github" element={<ProjectGithub />} />
               <Route path="databases" element={<ProjectDatabases />} />
               <Route path="endpoints" element={<ProjectEndpoints />} />
               <Route path="controllers" element={<ProjectControllers />} />
+              <Route path="tasks" element={<ProjectTasks />} />
             </Route>
           </Routes>
         </main>

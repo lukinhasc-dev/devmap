@@ -71,12 +71,93 @@
     transform: translateY(-1px);
 }
 
+.ep-subpage-add-btn--secondary {
+    background: transparent;
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+}
+
+.ep-subpage-add-btn--secondary:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    opacity: 1;
+}
+
 /* ── Grid de cards ── */
 
 .endpoints-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
     gap: 1rem;
+}
+
+/* ── Seções de grupo / coleção ── */
+
+.ep-group-section {
+    margin-bottom: 1.5rem;
+}
+
+.ep-group-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.55rem 0.2rem;
+    margin-bottom: 0.75rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.ep-group-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--color-text);
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+.ep-group-title svg {
+    color: var(--color-primary);
+    flex-shrink: 0;
+}
+
+.ep-group-base-url {
+    font-family: 'Fira Code', 'Cascadia Code', monospace;
+    font-size: 0.72rem;
+    color: var(--color-muted);
+    background: rgba(157, 78, 221, 0.08);
+    border: 1px solid rgba(157, 78, 221, 0.2);
+    border-radius: 4px;
+    padding: 0.1rem 0.4rem;
+}
+
+.ep-group-count {
+    font-size: 0.72rem;
+    color: var(--color-muted);
+    background: var(--color-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    padding: 0.1rem 0.5rem;
+}
+
+.ep-group-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-left: auto;
+}
+
+.ep-group-desc {
+    font-size: 0.78rem;
+    color: var(--color-muted);
+    margin: -0.35rem 0 0.75rem 0.1rem;
+}
+
+.ep-group-empty {
+    font-size: 0.8rem;
+    color: var(--color-muted);
+    padding: 0.9rem;
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius);
 }
 
 /* ── Badge de método HTTP ── */
@@ -212,6 +293,84 @@
 .ep-form__mono {
     font-family: 'Fira Code', 'Cascadia Code', monospace;
     font-size: 0.82rem;
+}
+
+.ep-form__section-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--color-text);
+    margin-top: 0.35rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--color-border);
+}
+
+.auth-editor {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+.auth-editor__hint {
+    font-size: 0.72rem;
+    color: var(--color-muted);
+    font-family: 'Fira Code', 'Cascadia Code', monospace;
+    margin-top: 0.3rem;
+}
+
+/* ─── Editor chave-valor (Params) ─── */
+.kv-editor {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.kv-editor__row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.kv-editor__row .ep-form__input {
+    flex: 1;
+}
+
+.kv-editor__remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    color: var(--color-muted);
+    transition: color var(--transition), border-color var(--transition);
+}
+
+.kv-editor__remove:hover {
+    color: #ef4444;
+    border-color: rgba(239, 68, 68, 0.5);
+}
+
+.kv-editor__add {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    align-self: flex-start;
+    background: transparent;
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius);
+    color: var(--color-muted);
+    font-size: 0.78rem;
+    font-weight: 500;
+    padding: 0.4rem 0.75rem;
+    transition: color var(--transition), border-color var(--transition);
+}
+
+.kv-editor__add:hover {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
 }
 
 /* ═══════════════════════════════════════════════
@@ -507,6 +666,111 @@
     padding: 1.5rem;
     border: 1px dashed var(--color-border);
     border-radius: var(--radius);
+}
+
+/* ─── Toolbar da resposta (abas + copiar) ─── */
+.ep-tester__resp-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.ep-tester__tabs--resp {
+    flex: 1;
+}
+
+.ep-tester__copy-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: var(--color-elevated);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    color: var(--color-muted);
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.35rem 0.7rem;
+    transition: color var(--transition), border-color var(--transition);
+    white-space: nowrap;
+}
+
+.ep-tester__copy-btn:hover {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+/* ─── Tabela de headers da resposta ─── */
+.ep-tester__headers-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Fira Code', 'Cascadia Code', monospace;
+    font-size: 0.76rem;
+}
+
+.ep-tester__headers-table td {
+    padding: 0.3rem 0.5rem;
+    border-bottom: 1px solid var(--color-border);
+    vertical-align: top;
+}
+
+.ep-tester__headers-table tr:last-child td {
+    border-bottom: none;
+}
+
+.ep-tester__header-key {
+    color: #d9a8ff;
+    white-space: nowrap;
+    font-weight: 600;
+    width: 1%;
+}
+
+.ep-tester__header-val {
+    color: var(--color-text);
+    word-break: break-all;
+}
+
+/* ═══════════════════════════════════════════════
+   JSON HIGHLIGHT ─ cores por tipo de token
+═══════════════════════════════════════════════ */
+
+.jh-pre {
+    font-family: 'Fira Code', 'Cascadia Code', monospace;
+    font-size: 0.78rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin: 0;
+    line-height: 1.65;
+    color: var(--color-text);
+}
+
+.jh-key {
+    color: #d9a8ff;
+}
+
+.jh-string {
+    color: #6ee7b7;
+}
+
+.jh-number {
+    color: #fbbf24;
+}
+
+.jh-boolean {
+    color: #60a5fa;
+}
+
+.jh-null {
+    color: #9ca3af;
+    font-style: italic;
+}
+
+.jh-punct {
+    color: #8a7aa6;
+}
+
+.jh-plain {
+    color: var(--color-text);
 }
 
 /* spinner inline */

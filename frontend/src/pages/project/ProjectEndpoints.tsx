@@ -1,24 +1,27 @@
-// ─── ProjectEndpoints.tsx ─────────────────────────────────────────────────────
-// Sub-página de endpoints vinculada a um projeto específico.
-// Inclui: CRUD de endpoints + Painel de Testes de URL.
-
 import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import ModalDefault from "../../components/ModalDefault";
 import EndpointCard from "../../components/EndpointCard";
 import EndpointForm, { type EndpointFormData } from "../../components/EndpointForm";
-import JsonTextarea from "../../components/JsonTextarea";
+import GroupForm, { type GroupFormData } from "../../components/GroupForm";
+import EndpointTester, { type EndpointTesterHandle } from "../../components/EndpointTester";
+import { EMPTY_AUTH, serializeAuth, deserializeAuth } from "../../components/AuthEditor";
+import { parsePairs, stringifyPairs } from "../../components/KeyValueEditor";
 import {
     getEndpointsByProject,
     createEndpoint,
     updateEndpoint,
     deleteEndpoint,
 } from "../../services/endpoint.service";
-import { testEndpointRoute, type TestRouteResponse } from "../../services/rotasendpoints.service";
+import {
+    getGroupsByProject,
+    createGroup,
+    updateGroup,
+    deleteGroup,
+} from "../../services/endpointgroup.service";
 import type { Endpoint } from "../../models/Endpoint.model";
+import type { EndpointGroup } from "../../models/EndpointGroup.model";
 import "../../styles/Endpoints.css";
-
-// ─── Constantes ───────────────────────────────────────────────────────────────
 
 const EMPTY_FORM: EndpointFormData = {
     nome: "",
@@ -26,44 +29,24 @@ const EMPTY_FORM: EndpointFormData = {
     rota: "",
     metodo: "GET",
     controller_nome: "",
+    group_id: "",
+    headers: "",
+    body: "",
+    params: [],
+    auth: EMPTY_AUTH,
 };
 
-const HTTP_METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE"] as const;
+const EMPTY_GROUP_FORM: GroupFormData = {
+    nome: "",
+    descricao: "",
+    base_url: "",
+};
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
-function statusPillClass(status: number): string {
-    if (status === 0) return "ep-status-pill ep-status-pill--net";
-    if (status < 300) return "ep-status-pill ep-status-pill--ok";
-    if (status < 500) return "ep-status-pill ep-status-pill--warn";
-    return "ep-status-pill ep-status-pill--error";
-}
-
-function prettyJson(value: any): string {
-    if (value === null || value === undefined) return "";
-    if (typeof value === "string") return value;
-    try { return JSON.stringify(value, null, 2); } catch { return String(value); }
-}
-
-// ─── Ícones ───────────────────────────────────────────────────────────────────
-
-function IconSend() {
-    return (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14"
-            fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="22" y1="2" x2="11" y2="13" />
-            <polygon points="22 2 15 22 11 13 2 9 22 2" />
-        </svg>
-    );
-}
-
-function IconZap() {
-    return (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16"
-            fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
-        </svg>
-    );
+function joinUrl(base: string | null | undefined, rota: string): string {
+    if (!rota) return base ?? "";
+    if (/^https?:\/\//i.test(rota)) return rota;
+    if (!base) return rota;
+    return `${base.replace(/\/+$/, "")}/${rota.replace(/^\/+/, "")}`;
 }
 
 function IconPlus() {
@@ -76,83 +59,116 @@ function IconPlus() {
     );
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
+function IconFolder() {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16"
+            fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+        </svg>
+    );
+}
+
+function IconEdit() {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="none"
+            stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+        </svg>
+    );
+}
+
+function IconTrash() {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="none"
+            stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="3 6 5 6 21 6" />
+            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+            <path d="M10 11v6M14 11v6" />
+            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+        </svg>
+    );
+}
 
 export default function ProjectEndpoints() {
     const { id } = useParams<{ id: string }>();
     const projectId = Number(id);
 
-    // ── Estado: lista ──
     const [endpoints, setEndpoints] = useState<Endpoint[]>([]);
-    const [filtered, setFiltered] = useState<Endpoint[]>([]);
+    const [groups, setGroups] = useState<EndpointGroup[]>([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
 
-    // ── Estado: modal CRUD ──
     const [modalOpen, setModalOpen] = useState(false);
     const [saving, setSaving] = useState(false);
     const [form, setForm] = useState<EndpointFormData>(EMPTY_FORM);
     const [formError, setFormError] = useState("");
     const [editingId, setEditingId] = useState<number | null>(null);
 
-    // ── Estado: painel de testes ──
-    const [testerUrl, setTesterUrl] = useState("");
-    const [testerMethod, setTesterMethod] = useState<string>("GET");
-    const [testerBody, setTesterBody] = useState("");
-    const [testerHeaders, setTesterHeaders] = useState("");
-    const [testerTab, setTesterTab] = useState<"body" | "headers">("body");
-    const [testerLoading, setTesterLoading] = useState(false);
-    const [testerResult, setTesterResult] = useState<TestRouteResponse | null>(null);
-    const testerRef = useRef<HTMLDivElement>(null);
+    const [groupModalOpen, setGroupModalOpen] = useState(false);
+    const [groupSaving, setGroupSaving] = useState(false);
+    const [groupForm, setGroupForm] = useState<GroupFormData>(EMPTY_GROUP_FORM);
+    const [groupFormError, setGroupFormError] = useState("");
+    const [editingGroupId, setEditingGroupId] = useState<number | null>(null);
 
-    // ── Fetch ──
-    function fetchEndpoints() {
+    const testerRef = useRef<EndpointTesterHandle>(null);
+
+    function fetchAll() {
         setLoading(true);
-        getEndpointsByProject(projectId)
-            .then((data) => { setEndpoints(data); setFiltered(data); })
+        Promise.all([
+            getGroupsByProject(projectId),
+            getEndpointsByProject(projectId),
+        ])
+            .then(([groupsData, endpointsData]) => {
+                setGroups(groupsData);
+                setEndpoints(endpointsData);
+            })
             .catch(console.error)
             .finally(() => setLoading(false));
     }
 
-    useEffect(() => { fetchEndpoints(); }, [projectId]);
+    useEffect(() => { fetchAll(); }, [projectId]);
 
-    // ── Busca local ──
-    useEffect(() => {
-        const q = search.toLowerCase();
-        setFiltered(
-            q
-                ? endpoints.filter((ep) =>
-                    ep.nome.toLowerCase().includes(q) ||
-                    ep.rota.toLowerCase().includes(q) ||
-                    ep.metodo.toLowerCase().includes(q)
-                )
-                : endpoints
-        );
-    }, [search, endpoints]);
+    const q = search.toLowerCase();
+    const filtered = q
+        ? endpoints.filter((ep) =>
+            ep.nome.toLowerCase().includes(q) ||
+            ep.rota.toLowerCase().includes(q) ||
+            ep.metodo.toLowerCase().includes(q)
+        )
+        : endpoints;
 
-    // ── CRUD: Novo ──
-    function handleAdd() {
+    const ungrouped = filtered.filter((ep) => ep.group_id === null || ep.group_id === undefined);
+
+    function endpointsOfGroup(groupId: number) {
+        return filtered.filter((ep) => ep.group_id === groupId);
+    }
+
+    function handleAdd(groupId?: number) {
         setEditingId(null);
-        setForm(EMPTY_FORM);
+        setForm({ ...EMPTY_FORM, group_id: groupId ? String(groupId) : "" });
         setFormError("");
         setModalOpen(true);
     }
 
-    // ── CRUD: Editar ──
     function handleEdit(ep: Endpoint) {
         setEditingId(ep.id);
         setForm({
             nome: ep.nome,
-            descricao: ep.descricao,
+            descricao: ep.descricao ?? "",
             rota: ep.rota,
             metodo: ep.metodo,
-            controller_nome: ep.controller_nome,
+            controller_nome: ep.controller_nome ?? "",
+            group_id: ep.group_id ? String(ep.group_id) : "",
+            headers: ep.headers ?? "",
+            body: ep.body ?? "",
+            params: parsePairs(ep.query_params),
+            auth: deserializeAuth(ep.auth_type, ep.auth_config),
         });
         setFormError("");
         setModalOpen(true);
     }
 
-    // ── CRUD: Salvar ──
     async function handleSave() {
         if (!form.nome.trim() || !form.rota.trim()) {
             setFormError("Nome e Rota são obrigatórios.");
@@ -160,14 +176,29 @@ export default function ProjectEndpoints() {
         }
         setSaving(true);
         try {
-            const payload = { ...form, project_id: projectId } as unknown as Endpoint;
+            const { auth_type, auth_config } = serializeAuth(form.auth);
+            const payload = {
+                nome: form.nome,
+                descricao: form.descricao,
+                rota: form.rota,
+                metodo: form.metodo,
+                controller_nome: form.controller_nome,
+                headers: form.headers.trim() || null,
+                body: form.body.trim() || null,
+                query_params: stringifyPairs(form.params),
+                auth_type,
+                auth_config,
+                group_id: form.group_id ? Number(form.group_id) : null,
+                project_id: projectId,
+            } as unknown as Endpoint;
+
             if (editingId !== null) {
                 await updateEndpoint(editingId, payload);
             } else {
                 await createEndpoint(payload);
             }
             setModalOpen(false);
-            fetchEndpoints();
+            fetchAll();
         } catch {
             setFormError("Erro ao salvar. Tente novamente.");
         } finally {
@@ -175,50 +206,108 @@ export default function ProjectEndpoints() {
         }
     }
 
-    // ── CRUD: Deletar ──
-    async function handleDelete(id: number) {
+    async function handleDelete(endpointId: number) {
         if (!window.confirm("Deseja realmente excluir este endpoint?")) return;
         try {
-            await deleteEndpoint(id);
-            fetchEndpoints();
+            await deleteEndpoint(endpointId);
+            fetchAll();
         } catch (err) {
             console.error(err);
         }
     }
 
-    // ── Tester: preencher a partir do card ──
-    function handleTest(ep: Endpoint) {
-        setTesterUrl(ep.rota);
-        setTesterMethod(ep.metodo.toUpperCase());
-        setTesterBody("");
-        setTesterHeaders("");
-        setTesterResult(null);
-        setTimeout(() => testerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
+    function handleAddGroup() {
+        setEditingGroupId(null);
+        setGroupForm(EMPTY_GROUP_FORM);
+        setGroupFormError("");
+        setGroupModalOpen(true);
     }
 
-    // ── Tester: enviar request ──
-    async function handleSendTest() {
-        if (!testerUrl.trim()) return;
-        setTesterLoading(true);
-        setTesterResult(null);
+    function handleEditGroup(group: EndpointGroup) {
+        setEditingGroupId(group.id);
+        setGroupForm({
+            nome: group.nome,
+            descricao: group.descricao ?? "",
+            base_url: group.base_url ?? "",
+        });
+        setGroupFormError("");
+        setGroupModalOpen(true);
+    }
+
+    async function handleSaveGroup() {
+        if (!groupForm.nome.trim()) {
+            setGroupFormError("O nome do grupo é obrigatório.");
+            return;
+        }
+        setGroupSaving(true);
         try {
-            const result = await testEndpointRoute({
-                url: testerUrl.trim(),
-                method: testerMethod as any,
-                body: testerBody || undefined,
-                headers: testerHeaders || undefined,
-            });
-            setTesterResult(result);
+            const payload = {
+                nome: groupForm.nome,
+                descricao: groupForm.descricao || null,
+                base_url: groupForm.base_url || null,
+                project_id: projectId,
+            } as Partial<EndpointGroup>;
+
+            if (editingGroupId !== null) {
+                await updateGroup(editingGroupId, payload);
+            } else {
+                await createGroup(payload);
+            }
+            setGroupModalOpen(false);
+            fetchAll();
+        } catch {
+            setGroupFormError("Erro ao salvar o grupo. Tente novamente.");
         } finally {
-            setTesterLoading(false);
+            setGroupSaving(false);
         }
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
+    async function handleDeleteGroup(group: EndpointGroup) {
+        const count = endpoints.filter((ep) => ep.group_id === group.id).length;
+        const msg = count > 0
+            ? `Excluir o grupo "${group.nome}"? Os ${count} endpoint(s) dentro dele ficarão sem grupo (não serão apagados).`
+            : `Excluir o grupo "${group.nome}"?`;
+        if (!window.confirm(msg)) return;
+        try {
+            await deleteGroup(group.id);
+            fetchAll();
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    function handleTest(ep: Endpoint) {
+        const group = groups.find((g) => g.id === ep.group_id);
+        testerRef.current?.loadRequest({
+            url: joinUrl(group?.base_url, ep.rota),
+            method: ep.metodo,
+            headers: ep.headers ?? "",
+            body: ep.body ?? "",
+            params: ep.query_params ?? "",
+            auth: deserializeAuth(ep.auth_type, ep.auth_config),
+        });
+    }
+
+    function renderEndpointGrid(list: Endpoint[]) {
+        return (
+            <div className="endpoints-grid">
+                {list.map((ep) => (
+                    <EndpointCard
+                        key={ep.id}
+                        endpoint={ep}
+                        onEdit={handleEdit}
+                        onDelete={handleDelete}
+                        onTest={handleTest}
+                    />
+                ))}
+            </div>
+        );
+    }
+
+    const hasAnything = groups.length > 0 || endpoints.length > 0;
 
     return (
         <div className="project-subpage">
-            {/* ── Topo: título + busca + botão novo ── */}
             <div className="ep-subpage-header">
                 <h2 className="project-subpage__heading">Endpoints</h2>
 
@@ -239,179 +328,88 @@ export default function ProjectEndpoints() {
                         />
                     </div>
 
-                    <button className="ep-subpage-add-btn" onClick={handleAdd}>
+                    <button className="ep-subpage-add-btn ep-subpage-add-btn--secondary" onClick={handleAddGroup}>
+                        <IconFolder />
+                        Novo Grupo
+                    </button>
+
+                    <button className="ep-subpage-add-btn" onClick={() => handleAdd()}>
                         <IconPlus />
                         Novo Endpoint
                     </button>
                 </div>
             </div>
 
-            {/* ── Lista de cards ── */}
             {loading ? (
                 <p className="project-subpage__empty-desc" style={{ padding: "1rem 0" }}>Carregando endpoints...</p>
-            ) : filtered.length === 0 ? (
+            ) : !hasAnything ? (
                 <div className="project-subpage__empty">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                         <polyline points="16 18 22 12 16 6" />
                         <polyline points="8 6 2 12 8 18" />
                     </svg>
-                    <p className="project-subpage__empty-title">
-                        {search ? "Nenhum endpoint encontrado." : "Nenhum endpoint cadastrado"}
+                    <p className="project-subpage__empty-title">Nenhum endpoint cadastrado</p>
+                    <p className="project-subpage__empty-desc">
+                        Crie um grupo para organizar suas rotas ou adicione um endpoint direto.
                     </p>
-                    {!search && (
-                        <p className="project-subpage__empty-desc">
-                            Documente e teste os endpoints deste projeto.
-                        </p>
-                    )}
                 </div>
             ) : (
-                <div className="endpoints-grid">
-                    {filtered.map((ep) => (
-                        <EndpointCard
-                            key={ep.id}
-                            endpoint={ep}
-                            onEdit={handleEdit}
-                            onDelete={handleDelete}
-                            onTest={handleTest}
-                        />
-                    ))}
-                </div>
+                <>
+                    {groups.map((group) => {
+                        const list = endpointsOfGroup(group.id);
+                        return (
+                            <section key={group.id} className="ep-group-section">
+                                <div className="ep-group-header">
+                                    <span className="ep-group-title">
+                                        <IconFolder />
+                                        {group.nome}
+                                    </span>
+                                    {group.base_url && (
+                                        <span className="ep-group-base-url">{group.base_url}</span>
+                                    )}
+                                    <span className="ep-group-count">{list.length}</span>
+
+                                    <div className="ep-group-actions">
+                                        <button className="card-icon-btn card-icon-btn--enter" title="Adicionar endpoint neste grupo" onClick={() => handleAdd(group.id)}>
+                                            <IconPlus />
+                                        </button>
+                                        <button className="card-icon-btn card-icon-btn--edit" title="Editar grupo" onClick={() => handleEditGroup(group)}>
+                                            <IconEdit />
+                                        </button>
+                                        <button className="card-icon-btn card-icon-btn--delete" title="Excluir grupo" onClick={() => handleDeleteGroup(group)}>
+                                            <IconTrash />
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {group.descricao && <p className="ep-group-desc">{group.descricao}</p>}
+
+                                {list.length === 0 ? (
+                                    <div className="ep-group-empty">
+                                        {search ? "Nenhum endpoint deste grupo bate com a busca." : "Nenhum endpoint neste grupo ainda."}
+                                    </div>
+                                ) : (
+                                    renderEndpointGrid(list)
+                                )}
+                            </section>
+                        );
+                    })}
+
+                    {ungrouped.length > 0 && (
+                        <section className="ep-group-section">
+                            <div className="ep-group-header">
+                                <span className="ep-group-title">Sem grupo</span>
+                                <span className="ep-group-count">{ungrouped.length}</span>
+                            </div>
+                            {renderEndpointGrid(ungrouped)}
+                        </section>
+                    )}
+                </>
             )}
 
-            {/* ══════════════════════════════════════════
-                PAINEL DE TESTES
-            ══════════════════════════════════════════ */}
-            <div className="ep-tester" ref={testerRef} style={{ marginTop: "1.5rem" }}>
-                <div className="ep-tester__header">
-                    <span className="ep-tester__title">
-                        <IconZap />
-                        Testar Endpoint
-                    </span>
-                </div>
+            <EndpointTester ref={testerRef} />
 
-                <div className="ep-tester__body">
-                    {/* ── URL Bar ── */}
-                    <div className="ep-tester__url-bar">
-                        <select
-                            className="ep-tester__method-select"
-                            value={testerMethod}
-                            onChange={(e) => setTesterMethod(e.target.value)}
-                        >
-                            {HTTP_METHODS.map((m) => (
-                                <option key={m} value={m}>{m}</option>
-                            ))}
-                        </select>
-
-                        <input
-                            type="text"
-                            className="ep-tester__url-input"
-                            placeholder="https://api.exemplo.com/rota ou /api/rota"
-                            value={testerUrl}
-                            onChange={(e) => setTesterUrl(e.target.value)}
-                            onKeyDown={(e) => { if (e.key === "Enter") handleSendTest(); }}
-                        />
-
-                        <button
-                            className="ep-tester__send-btn"
-                            onClick={handleSendTest}
-                            disabled={testerLoading || !testerUrl.trim()}
-                        >
-                            {testerLoading ? <span className="ep-spinner" /> : <IconSend />}
-                            {testerLoading ? "Enviando..." : "Enviar"}
-                        </button>
-                    </div>
-
-                    {/* ── Tabs Body / Headers ── */}
-                    <div>
-                        <div className="ep-tester__tabs">
-                            <button
-                                className={`ep-tester__tab${testerTab === "body" ? " ep-tester__tab--active" : ""}`}
-                                onClick={() => setTesterTab("body")}
-                            >
-                                Body (JSON)
-                            </button>
-                            <button
-                                className={`ep-tester__tab${testerTab === "headers" ? " ep-tester__tab--active" : ""}`}
-                                onClick={() => setTesterTab("headers")}
-                            >
-                                Headers
-                            </button>
-                        </div>
-
-                        {testerTab === "body" ? (
-                            <JsonTextarea
-                                className="ep-tester__textarea"
-                                style={{ marginTop: "0.6rem", width: "100%" }}
-                                placeholder={'{\n  "chave": "valor"\n}'}
-                                value={testerBody}
-                                onChange={setTesterBody}
-                                rows={5}
-                            />
-                        ) : (
-                            <JsonTextarea
-                                className="ep-tester__textarea"
-                                style={{ marginTop: "0.6rem", width: "100%" }}
-                                placeholder={'{\n  "Authorization": "Bearer seu-token"\n}'}
-                                value={testerHeaders}
-                                onChange={setTesterHeaders}
-                                rows={4}
-                            />
-                        )}
-                    </div>
-
-                    {/* ── Resposta ── */}
-                    {testerResult ? (
-                        <div className="ep-tester__response">
-                            {/* Meta: status + tempo + content-type */}
-                            <div className="ep-tester__response-meta">
-                                <span className={statusPillClass(testerResult.status)}>
-                                    {testerResult.status || "ERR"} {testerResult.statusText}
-                                </span>
-                                <span className="ep-tester__duration">⏱ {testerResult.durationMs}ms</span>
-                                {testerResult.contentType && (
-                                    <span className="ep-tester__content-type">
-                                        {testerResult.contentType.split(";")[0]}
-                                    </span>
-                                )}
-                            </div>
-
-                            {/* Corpo */}
-                            {testerResult.isHtml ? (
-                                <div className="ep-tester__html-notice">
-                                    <span>⚠️</span>
-                                    <span>
-                                        O servidor retornou HTML (página de erro ou redirect).
-                                        Verifique se a URL está correta.
-                                    </span>
-                                </div>
-                            ) : testerResult.error !== null ? (
-                                <div className="ep-tester__json-block ep-tester__json-block--error">
-                                    <pre>
-                                        {typeof testerResult.error === "string"
-                                            ? testerResult.error
-                                            : prettyJson(testerResult.error)}
-                                    </pre>
-                                </div>
-                            ) : testerResult.data !== null && testerResult.data !== "" ? (
-                                <div className="ep-tester__json-block">
-                                    <pre>{prettyJson(testerResult.data)}</pre>
-                                </div>
-                            ) : (
-                                <div className="ep-tester__empty" style={{ borderStyle: "solid" }}>
-                                    Sem corpo na resposta (ex: 204 No Content).
-                                </div>
-                            )}
-                        </div>
-                    ) : !testerLoading && (
-                        <div className="ep-tester__empty">
-                            Clique em ▶ em um endpoint ou preencha a URL acima e envie.
-                        </div>
-                    )}
-                </div>
-            </div>
-
-            {/* ── Modal CRUD ── */}
             <ModalDefault
                 isOpen={modalOpen}
                 onClose={() => setModalOpen(false)}
@@ -424,9 +422,37 @@ export default function ProjectEndpoints() {
                 <EndpointForm
                     form={form}
                     error={formError}
+                    groups={groups}
                     onChange={(field, value) => {
                         setForm((p) => ({ ...p, [field]: value }));
                         setFormError("");
+                    }}
+                    onAuthChange={(auth) => {
+                        setForm((p) => ({ ...p, auth }));
+                        setFormError("");
+                    }}
+                    onParamsChange={(params) => {
+                        setForm((p) => ({ ...p, params }));
+                        setFormError("");
+                    }}
+                />
+            </ModalDefault>
+
+            <ModalDefault
+                isOpen={groupModalOpen}
+                onClose={() => setGroupModalOpen(false)}
+                onSubmit={handleSaveGroup}
+                title={editingGroupId !== null ? "Editar Grupo" : "Novo Grupo"}
+                description="Organize seus endpoints em coleções."
+                submitLabel={editingGroupId !== null ? "Salvar Alterações" : "Criar Grupo"}
+                isLoading={groupSaving}
+            >
+                <GroupForm
+                    form={groupForm}
+                    error={groupFormError}
+                    onChange={(field, value) => {
+                        setGroupForm((p) => ({ ...p, [field]: value }));
+                        setGroupFormError("");
                     }}
                 />
             </ModalDefault>

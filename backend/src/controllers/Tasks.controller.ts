@@ -27,7 +27,7 @@ export default class TasksController {
                 })
             }
 
-            const result = db.prepare("INSERT INTO tasks (project_id, titulo, descricao, status) VALUES (?, ?, ?, ?)").run(tasks.project_id, tasks.titulo, tasks.descricao, tasks.status)
+            const result = db.prepare("INSERT INTO tasks (project_id, titulo, descricao, status, labels, priority) VALUES (?, ?, ?, ?, ?, ?)").run(tasks.project_id, tasks.titulo, tasks.descricao, tasks.status, tasks.labels ?? null, tasks.priority ?? null)
             return res.status(201).json({
                 message: "Tarefa criada com sucesso!",
                 result
@@ -56,7 +56,7 @@ export default class TasksController {
                 })
             }
 
-            const result = db.prepare("UPDATE tasks SET project_id = ?, titulo = ?, descricao = ?, status = ? WHERE id = ?").run(tasks.project_id, tasks.titulo, tasks.descricao, tasks.status, id)
+            const result = db.prepare("UPDATE tasks SET project_id = ?, titulo = ?, descricao = ?, status = ?, labels = ?, priority = ? WHERE id = ?").run(tasks.project_id, tasks.titulo, tasks.descricao, tasks.status, tasks.labels ?? null, tasks.priority ?? null, id)
             return res.status(200).json({
                 message: "Tarefa atualizada com sucesso!",
                 result

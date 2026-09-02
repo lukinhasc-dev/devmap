@@ -60,6 +60,18 @@ function IconControllers() {
     )
 }
 
+function IconTasks() {
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="1" />
+            <rect x="14" y="3" width="7" height="7" rx="1" />
+            <rect x="3" y="14" width="7" height="7" rx="1" />
+            <line x1="14" y1="7" x2="21" y2="7" />
+        </svg>
+    )
+}
+
 // ── Component ────────────────────────────────────────────────
 export default function ProjectDetail() {
     const { id } = useParams<{ id: string }>()
@@ -157,6 +169,16 @@ export default function ProjectDetail() {
                 >
                     <IconControllers />
                     Controllers
+                </NavLink>
+
+                <NavLink
+                    to={`${base}/tasks`}
+                    className={({ isActive }: { isActive: boolean }) =>
+                        "project-detail__nav-link" + (isActive ? " active" : "")
+                    }
+                >
+                    <IconTasks />
+                    Tasks
                 </NavLink>
             </nav>
 
