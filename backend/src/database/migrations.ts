@@ -13,6 +13,9 @@ export function runMigrations() {
     taskStatuses();
     taskLabels();
     migrateTasksColumns();
+    projectFiles();
+    projectLinks();
+    projectSecrets();
 }
 
 function columnExists(table: string, column: string): boolean {
@@ -227,4 +230,72 @@ export function taskLabels() {
 export function migrateTasksColumns() {
     addColumnIfNotExists("tasks", "labels", "TEXT");
     addColumnIfNotExists("tasks", "priority", "TEXT");
+}
+
+export function projectFiles() {
+    db.exec(`
+        CREATE TABLE IF NOT EXISTS project_files (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            project_id INTEGER NOT NULL,
+
+            nome TEXT NOT NULL,
+            descricao TEXT,
+            caminho TEXT NOT NULL,
+            original_name TEXT,
+            mime TEXT,
+            tamanho INTEGER,
+
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+            FOREIGN KEY (project_id)
+                REFERENCES projects(id)
+                ON DELETE CASCADE
+        );
+    `);
+
+    console.log("🚀 Tabela project_files criada!");
+}
+
+export function projectLinks() {
+    db.exec(`
+        CREATE TABLE IF NOT EXISTS project_links (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            project_id INTEGER NOT NULL,
+
+            titulo TEXT NOT NULL,
+            url TEXT NOT NULL,
+            descricao TEXT,
+
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+            FOREIGN KEY (project_id)
+                REFERENCES projects(id)
+                ON DELETE CASCADE
+        );
+    `);
+
+    console.log("🚀 Tabela project_links criada!");
+}
+
+export function projectSecrets() {
+    db.exec(`
+        CREATE TABLE IF NOT EXISTS project_secrets (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            project_id INTEGER NOT NULL,
+
+            nome TEXT NOT NULL,
+            tipo TEXT,
+            descricao TEXT,
+            valor_cifrado TEXT NOT NULL,
+
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+            FOREIGN KEY (project_id)
+                REFERENCES projects(id)
+                ON DELETE CASCADE
+        );
+    `);
+
+    console.log("🚀 Tabela project_secrets criada!");
 }
