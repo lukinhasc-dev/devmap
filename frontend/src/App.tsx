@@ -11,6 +11,7 @@ import ProjectDatabases from "./pages/project/ProjectDatabases.tsx"
 import ProjectEndpoints from "./pages/project/ProjectEndpoints.tsx"
 import ProjectControllers from "./pages/project/ProjectController.tsx"
 import ProjectTasks from "./pages/project/ProjectTasks.tsx"
+import ProjectFiles from "./pages/project/ProjectFiles.tsx"
 import Settings from "./pages/Settings.tsx"
 
 
@@ -32,6 +33,7 @@ function App() {
               <Route path="endpoints" element={<ProjectEndpoints />} />
               <Route path="controllers" element={<ProjectControllers />} />
               <Route path="tasks" element={<ProjectTasks />} />
+              <Route path="files" element={<ProjectFiles />} />
             </Route>
           </Routes>
         </main>
