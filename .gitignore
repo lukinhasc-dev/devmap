@@ -43,6 +43,12 @@ logs/
 /devmap.db
 
 # =========================
+# Uploads e chave de criptografia
+# =========================
+/uploads/
+secret.key
+
+# =========================
 # Electron
 # =========================
 release/
@@ -59,3 +65,8 @@ Thumbs.db
 # =========================
 .vscode/
 .idea/
+
+# =========================
+# Documentações
+# =========================
+.claude/
